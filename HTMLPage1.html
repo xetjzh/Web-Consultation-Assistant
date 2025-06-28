@@ -491,6 +491,29 @@
                 // 生育史
                 'spontaneous-abortion', 'induced-abortion', 'delivery-detail', 'newborn-health',
                 'breastfeeding', 'contraception', 'infertility', 'assisted-reproduction', 'spouse-fertility',
+                // 体格检查详情
+                'edema-detail', 'rash-detail', 'lymph-detail', 'tenderness-detail', 
+                'liver-detail', 'spleen-detail', 'muscle-strength-detail', 'joint-detail',
+                // 辅助检查
+                'blood-test', 'urine-test', 'liver-test', 'kidney-test', 
+                'xray-test', 'ct-test', 'mri-test', 'ultrasound-test', 'surgery-plan'
+            ];
+                'hypertension-detail', 'diabetes-detail', 'heart-disease-detail', 'stroke-detail',
+                'liver-disease-detail', 'kidney-disease-detail', 'cancer-detail', 'other-chronic-detail',
+                'hepatitis-detail', 'tuberculosis-detail', 'other-infection-detail',
+                'surgery-history-detail', 'trauma-detail', 'transfusion-detail',
+                'drug-allergy-detail', 'food-allergy-detail', 'other-allergy-detail', 'vaccination-detail',
+                // 个人史
+                'schistosomiasis-area', 'endemic-area', 'epidemic-area',
+                'toxic-exposure', 'dust-exposure', 'radiation-exposure', 'noise-exposure',
+                'smoking-detail', 'drinking-detail', 'drug-dependence', 'drug-abuse',
+                'sexual-history', 'std-history',
+                // 生育史
+                'spontaneous-abortion', 'induced-abortion', 'delivery-detail', 'newborn-health',
+                'breastfeeding', 'contraception', 'infertility', 'assisted-reproduction', 'spouse-fertility',
+                // 体格检查详情
+                'edema-detail', 'rash-detail', 'lymph-detail', 'tenderness-detail', 
+                'liver-detail', 'spleen-detail', 'muscle-strength-detail', 'joint-detail',
                 // 辅助检查
                 'blood-test', 'urine-test', 'liver-test', 'kidney-test', 
                 'xray-test', 'ct-test', 'mri-test', 'ultrasound-test', 'surgery-plan'
@@ -1821,41 +1844,113 @@
                 <option>弹性消失</option>
             </select>
             <label>皮疹</label>
-            <select name="rash">
+            <select onchange="toggleDisplay('rash-detail', this.value)" name="rash">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="rash-detail" class="hidden">
+                <label>类型</label>
+                <select name="rash_type">
+                    <option>丘疹</option>
+                    <option>斑疹</option>
+                    <option>丘疱疹</option>
+                    <option>水疱</option>
+                    <option>脓疱</option>
+                    <option>结节</option>
+                    <option>荨麻疹</option>
+                    <option>紫癜</option>
+                    <option>瘀斑</option>
+                    <option>其他</option>
+                </select>
+                <label>分布</label>
+                <select name="rash_distribution">
+                    <option>全身性</option>
+                    <option>局限性</option>
+                    <option>对称性</option>
+                    <option>单侧性</option>
+                    <option>暴露部位</option>
+                    <option>屈侧</option>
+                    <option>伸侧</option>
+                </select>
+                <input type="text" placeholder="具体部位描述" name="rash_location">
+            </span>
             <label>水肿</label>
-            <select name="edema">
+            <select onchange="toggleDisplay('edema-detail', this.value)" name="edema">
                 <option>无</option>
-                <option>轻度</option>
-                <option>中度</option>
-                <option>重度</option>
+                <option>有</option>
             </select>
+            <span id="edema-detail" class="hidden">
+                <label>部位</label>
+                <select name="edema_location">
+                    <option>双下肢</option>
+                    <option>左下肢</option>
+                    <option>右下肢</option>
+                    <option>双上肢</option>
+                    <option>左上肢</option>
+                    <option>右上肢</option>
+                    <option>颜面部</option>
+                    <option>眼睑部</option>
+                    <option>全身性</option>
+                    <option>腹部</option>
+                    <option>腰骶部</option>
+                </select>
+                <label>程度</label>
+                <select name="edema_degree">
+                    <option>轻度(+)</option>
+                    <option>中度(++)</option>
+                    <option>重度(+++)</option>
+                    <option>极重度(++++)</option>
+                </select>
+                <label>性质</label>
+                <select name="edema_nature">
+                    <option>凹陷性</option>
+                    <option>非凹陷性</option>
+                    <option>硬性</option>
+                </select>
+            </span>
         </div>
         <div class="form-row">
             <strong>淋巴结：</strong>
             <label>浅表淋巴结</label>
-            <select name="lymph_nodes">
+            <select onchange="toggleDisplay('lymph-detail', this.value)" name="lymph_nodes">
                 <option>未触及肿大</option>
-                <option>颈部肿大</option>
-                <option>腋窝肿大</option>
-                <option>腹股沟肿大</option>
-                <option>多处肿大</option>
+                <option>触及肿大</option>
             </select>
-            <label>淋巴结质地</label>
-            <select name="lymph_texture">
-                <option>正常</option>
-                <option>质软</option>
-                <option>质韧</option>
-                <option>质硬</option>
-            </select>
-            <label>活动度</label>
-            <select name="lymph_mobility">
-                <option>正常</option>
-                <option>活动</option>
-                <option>固定</option>
-            </select>
+            <span id="lymph-detail" class="hidden">
+                <label>部位</label>
+                <select name="lymph_location">
+                    <option>颈部</option>
+                    <option>耳后</option>
+                    <option>耳前</option>
+                    <option>颌下</option>
+                    <option>锁骨上</option>
+                    <option>腋窝</option>
+                    <option>腹股沟</option>
+                    <option>滑车上</option>
+                    <option>多处</option>
+                </select>
+                <label>大小</label>
+                <input type="text" placeholder="如1×1cm" name="lymph_size">
+                <label>质地</label>
+                <select name="lymph_texture">
+                    <option>质软</option>
+                    <option>质韧</option>
+                    <option>质硬</option>
+                    <option>质脆</option>
+                </select>
+                <label>活动度</label>
+                <select name="lymph_mobility">
+                    <option>活动</option>
+                    <option>固定</option>
+                    <option>与皮肤粘连</option>
+                    <option>与深部组织粘连</option>
+                </select>
+                <label>压痛</label>
+                <select name="lymph_tenderness">
+                    <option>无压痛</option>
+                    <option>有压痛</option>
+                </select>
+            </span>
         </div>
         <div class="form-row">
             <strong>头颈部：</strong>
@@ -1985,30 +2080,110 @@
                 <option>板样强直</option>
             </select>
             <label>压痛</label>
-            <select name="tenderness">
+            <select onchange="toggleDisplay('tenderness-detail', this.value)" name="tenderness">
                 <option>无</option>
-                <option>轻度压痛</option>
-                <option>明显压痛</option>
-                <option>反跳痛</option>
+                <option>有</option>
             </select>
+            <span id="tenderness-detail" class="hidden">
+                <label>部位</label>
+                <select name="tenderness_location">
+                    <option>右上腹</option>
+                    <option>左上腹</option>
+                    <option>上腹部(剑突下)</option>
+                    <option>右肋缘下</option>
+                    <option>左肋缘下</option>
+                    <option>右腰部</option>
+                    <option>左腰部</option>
+                    <option>脐周</option>
+                    <option>右下腹</option>
+                    <option>左下腹</option>
+                    <option>耻骨上</option>
+                    <option>麦氏点</option>
+                    <option>墨菲征阳性点</option>
+                    <option>全腹</option>
+                </select>
+                <label>性质</label>
+                <select name="tenderness_nature">
+                    <option>轻度压痛</option>
+                    <option>明显压痛</option>
+                    <option>反跳痛</option>
+                    <option>深压痛</option>
+                </select>
+                <label>范围</label>
+                <select name="tenderness_extent">
+                    <option>局限性</option>
+                    <option>广泛性</option>
+                    <option>固定性</option>
+                    <option>游走性</option>
+                </select>
+            </span>
         </div>
         <div class="form-row">
             <strong>腹部脏器：</strong>
             <label>肝脏</label>
-            <select name="liver">
+            <select onchange="toggleDisplay('liver-detail', this.value)" name="liver">
                 <option>未触及</option>
-                <option>肋下1cm</option>
-                <option>肋下2cm</option>
-                <option>肋下3cm以上</option>
-                <option>质软</option>
-                <option>质硬</option>
+                <option>可触及</option>
             </select>
+            <span id="liver-detail" class="hidden">
+                <label>大小</label>
+                <select name="liver_size">
+                    <option>肋下1cm</option>
+                    <option>肋下2cm</option>
+                    <option>肋下3cm</option>
+                    <option>肋下4cm</option>
+                    <option>肋下5cm以上</option>
+                    <option>剑突下可及</option>
+                </select>
+                <label>质地</label>
+                <select name="liver_texture">
+                    <option>质软</option>
+                    <option>质韧</option>
+                    <option>质硬</option>
+                    <option>质脆</option>
+                </select>
+                <label>边缘</label>
+                <select name="liver_edge">
+                    <option>光滑</option>
+                    <option>不光滑</option>
+                    <option>钝</option>
+                    <option>锐</option>
+                    <option>结节状</option>
+                </select>
+                <label>压痛</label>
+                <select name="liver_tenderness">
+                    <option>无压痛</option>
+                    <option>有压痛</option>
+                </select>
+            </span>
             <label>脾脏</label>
-            <select name="spleen">
+            <select onchange="toggleDisplay('spleen-detail', this.value)" name="spleen">
                 <option>未触及</option>
-                <option>肋下可及</option>
-                <option>明显肿大</option>
+                <option>可触及</option>
             </select>
+            <span id="spleen-detail" class="hidden">
+                <label>大小</label>
+                <select name="spleen_size">
+                    <option>肋下1cm</option>
+                    <option>肋下2cm</option>
+                    <option>肋下3cm</option>
+                    <option>肋下4cm</option>
+                    <option>肋下5cm以上</option>
+                    <option>平脐</option>
+                    <option>脐下</option>
+                </select>
+                <label>质地</label>
+                <select name="spleen_texture">
+                    <option>质软</option>
+                    <option>质韧</option>
+                    <option>质硬</option>
+                </select>
+                <label>压痛</label>
+                <select name="spleen_tenderness">
+                    <option>无压痛</option>
+                    <option>有压痛</option>
+                </select>
+            </span>
             <label>肾脏</label>
             <select name="kidneys">
                 <option>未触及</option>
@@ -2019,14 +2194,30 @@
         <div class="form-row">
             <strong>四肢检查：</strong>
             <label>肌力</label>
-            <select name="muscle_strength">
+            <select onchange="toggleDisplay('muscle-strength-detail', this.value)" name="muscle_strength">
                 <option>正常(5级)</option>
-                <option>4级</option>
-                <option>3级</option>
-                <option>2级</option>
-                <option>1级</option>
-                <option>0级</option>
+                <option>异常</option>
             </select>
+            <span id="muscle-strength-detail" class="hidden">
+                <label>部位</label>
+                <select name="muscle_strength_location">
+                    <option>双上肢</option>
+                    <option>左上肢</option>
+                    <option>右上肢</option>
+                    <option>双下肢</option>
+                    <option>左下肢</option>
+                    <option>右下肢</option>
+                    <option>四肢</option>
+                </select>
+                <label>级别</label>
+                <select name="muscle_strength_grade">
+                    <option>4级</option>
+                    <option>3级</option>
+                    <option>2级</option>
+                    <option>1级</option>
+                    <option>0级</option>
+                </select>
+            </span>
             <label>肌张力</label>
             <select name="muscle_tone">
                 <option>正常</option>
@@ -2035,12 +2226,22 @@
                 <option>松弛</option>
             </select>
             <label>关节活动</label>
-            <select name="joint_mobility">
+            <select onchange="toggleDisplay('joint-detail', this.value)" name="joint_mobility">
                 <option>正常</option>
-                <option>受限</option>
-                <option>僵硬</option>
-                <option>畸形</option>
+                <option>异常</option>
             </select>
+            <span id="joint-detail" class="hidden">
+                <label>部位</label>
+                <input type="text" placeholder="如膝关节、肘关节等" name="joint_location">
+                <label>情况</label>
+                <select name="joint_condition">
+                    <option>活动受限</option>
+                    <option>僵硬</option>
+                    <option>畸形</option>
+                    <option>肿胀</option>
+                    <option>疼痛</option>
+                </select>
+            </span>
         </div>
         <div class="form-row">
             <strong>神经系统：</strong>
