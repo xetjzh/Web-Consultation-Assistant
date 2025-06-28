@@ -1,0 +1,2243 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问诊助手</title>    <style>
+        /* 基础样式 */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0;
+            padding: 15px; 
+            line-height: 1.6;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .section { 
+            background: white;
+            border: 1px solid #ddd; 
+            padding: 16px; 
+            margin-bottom: 15px; 
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 { 
+            margin-top: 0; 
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 18px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        
+        .hidden { 
+            display: none; 
+        }
+        
+        .form-row { 
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        label { 
+            font-weight: bold;
+            color: #555;
+            min-width: 80px;
+            flex-shrink: 0;
+        }
+        
+        input[type="text"], 
+        input[type="number"], 
+        input[type="tel"],
+        select, 
+        textarea {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="text"]:focus, 
+        input[type="number"]:focus, 
+        input[type="tel"]:focus,
+        select:focus, 
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 80px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        /* 疾病史用药详情样式 */
+        .form-row span div {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 3px solid #27ae60;
+        }
+        
+        .form-row span div input {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        select {
+            cursor: pointer;
+            background-color: white;
+        }
+        
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .section {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            
+            .section h2 {
+                font-size: 16px;
+                margin-bottom: 12px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                margin-bottom: 12px;
+            }
+            
+            .form-row > strong {
+                width: 100%;
+                margin-bottom: 8px;
+                color: #2c3e50;
+                font-size: 14px;
+            }
+            
+            .form-row > span {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                align-items: center;
+            }
+            
+            label {
+                min-width: 60px;
+                font-size: 13px;
+            }
+            
+            input[type="text"], 
+            input[type="number"], 
+            input[type="tel"],
+            select {
+                flex: 1;
+                min-width: 120px;
+                padding: 10px 12px;
+                font-size: 16px; /* 防止iOS缩放 */
+            }
+            
+            textarea {
+                font-size: 16px; /* 防止iOS缩放 */
+                padding: 10px 12px;
+            }
+            
+            /* 隐藏元素在移动端的显示优化 */
+            .hidden {
+                display: none !important;
+            }
+            
+            span[id*="relief-"], 
+            span[id*="disease-"], 
+            span[id*="surgery-"], 
+            span[id*="allergy-"], 
+            span[id*="vaccine-"], 
+            span[id*="local-"], 
+            span[id*="long-"], 
+            span[id*="epidemic-"], 
+            span[id*="hazard-"], 
+            span[id*="smoke-"], 
+            span[id*="drink-"], 
+            span[id*="drug-"], 
+            span[id*="married-"], 
+            span[id*="children-"],
+            span[id*="menopause-"],
+            span[id*="father-"],
+            span[id*="mother-"],
+            span[id*="family-"],
+            span[id*="siblings-"],
+            span[id*="weight-"],
+            span[id*="hypertension-"],
+            span[id*="diabetes-"],
+            span[id*="heart-disease-"],
+            span[id*="stroke-"],
+            span[id*="liver-disease-"],
+            span[id*="kidney-disease-"],
+            span[id*="cancer-"],
+            span[id*="chronic-"],
+            span[id*="hepatitis-"],
+            span[id*="tuberculosis-"],
+            span[id*="infection-"],
+            span[id*="surgery-history-"],
+            span[id*="trauma-"],
+            span[id*="transfusion-"],
+            span[id*="drug-allergy-"],
+            span[id*="food-allergy-"],
+            span[id*="other-allergy-"],
+            span[id*="vaccination-"],
+            span[id*="schistosomiasis-"],
+            span[id*="endemic-"],
+            span[id*="epidemic-area"],
+            span[id*="toxic-"],
+            span[id*="dust-"],
+            span[id*="radiation-"],
+            span[id*="noise-"],
+            span[id*="smoking-"],
+            span[id*="drinking-"],
+            span[id*="drug-dependence"],
+            span[id*="drug-abuse"],
+            span[id*="sexual-"],
+            span[id*="std-"],
+            span[id*="abortion"],
+            span[id*="delivery-"],
+            span[id*="newborn-"],
+            span[id*="breastfeeding"],
+            span[id*="contraception"],
+            span[id*="infertility"],
+            span[id*="assisted-"],
+            span[id*="spouse-"],
+            span[id*="blood-"],
+            span[id*="urine-"],
+            span[id*="liver-test"],
+            span[id*="kidney-test"],
+            span[id*="xray-"],
+            span[id*="ct-"],
+            span[id*="mri-"],
+            span[id*="ultrasound-"],
+            span[id*="surgery-plan"] {
+                width: 100%;
+                margin-top: 8px;
+                padding: 8px;
+                background-color: #f8f9fa;
+                border-radius: 4px;
+                border-left: 3px solid #3498db;
+            }
+        }
+        
+        /* 超小屏幕适配 */
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+            
+            .section {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .form-row {
+                gap: 4px;
+                margin-bottom: 10px;
+            }
+            
+            input[type="text"], 
+            input[type="number"], 
+            input[type="tel"],
+            select {
+                min-width: 100px;
+                padding: 8px 10px;
+            }
+            
+            label {
+                min-width: 50px;
+                font-size: 12px;
+            }
+            
+            /* 移动端用药详情样式 */
+            .form-row span div {
+                flex-direction: column;
+                gap: 6px;
+                padding: 6px;
+                margin-top: 6px;
+            }
+            
+            .form-row span div input {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+          /* 触摸友好的按钮和选择器 */
+        button {
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        @media (hover: none) and (pointer: coarse) {
+            select, 
+            input[type="text"], 
+            input[type="number"], 
+            input[type="tel"] {
+                min-height: 44px; /* iOS建议的最小触摸目标 */
+            }
+            
+            button {
+                min-height: 44px;
+                padding: 12px 20px;
+                margin: 5px;
+                width: auto;
+                min-width: 100px;
+            }
+        }
+        
+        /* 移动端按钮布局 */
+        @media (max-width: 480px) {
+            .section[style*="text-align: center"] {
+                text-align: center;
+            }
+            
+            .section button {
+                display: inline-block;
+                width: 45%;
+                margin: 5px 1%;
+                padding: 10px 6px;
+                font-size: 12px;
+            }
+        }
+        
+        /* 打印样式 */
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+                font-size: 12px;
+            }
+            
+            .section {
+                box-shadow: none;
+                border: 1px solid #000;
+                margin-bottom: 10px;
+                page-break-inside: avoid;
+            }
+            
+            .section:last-child {
+                display: none; /* 隐藏操作按钮 */
+            }
+            
+            h1, .section h2 {
+                color: black;
+                border-bottom: 1px solid #000;
+            }
+            
+            input, select, textarea {
+                border: none;
+                border-bottom: 1px solid #000;
+                background: transparent;
+                print-color-adjust: exact;
+            }
+            
+            .hidden {
+                display: none !important;
+            }
+        }
+    </style>    <script>
+        function toggleDisplay(id, value, showValue = "有") {
+            document.getElementById(id).style.display = (value === showValue) ? "block" : "none";
+        }
+        function onGenderChange(sel) {
+            document.getElementById('menstrual-history').style.display = (sel.value === "女") ? "block" : "none";
+        }
+        function onReliefChange(sel) {
+            let val = sel.value;
+            document.getElementById('relief-rest').style.display = (val === "休息") ? "inline" : "none";
+            document.getElementById('relief-medicine').style.display = (val === "服药") ? "inline" : "none";
+            document.getElementById('relief-other').style.display = (val === "其他") ? "inline" : "none";
+        }
+        function onSymptomReliefChange(sel) {
+            let val = sel.value;
+            document.getElementById('relief-options').style.display = (val === "有") ? "inline" : "none";
+            document.getElementById('no-relief').style.display = (val === "无") ? "inline" : "none";
+        }
+        
+        // 动态生成药物输入框
+        function generateDrugInputs(count) {
+            const container = document.getElementById('drug-inputs-container');
+            container.innerHTML = ''; // 清空现有内容
+            
+            if (count == 0) {
+                container.innerHTML = '<div class="form-row"><em>患者未使用任何药物</em></div>';
+                return;
+            }
+            
+            for (let i = 1; i <= count; i++) {
+                const drugRow = document.createElement('div');
+                drugRow.className = 'form-row';
+                drugRow.innerHTML = `
+                    <label>第${i}种药物</label>
+                    <input type="text" placeholder="药物名称" name="drug${i}_name">
+                    <input type="text" placeholder="剂量规格" name="drug${i}_dose">
+                    <input type="text" placeholder="用法用量" name="drug${i}_usage">
+                    <input type="text" placeholder="用药时间" name="drug${i}_duration">
+                    <select name="drug${i}_effect">
+                        <option>有效</option>
+                        <option>无效</option>
+                        <option>部分有效</option>
+                        <option>不详</option>
+                    </select>
+                `;
+                container.appendChild(drugRow);
+            }
+            
+            // 如果有多种药物，添加药物相互作用和依从性评估
+            if (count > 1) {
+                const interactionRow = document.createElement('div');
+                interactionRow.className = 'form-row';
+                interactionRow.innerHTML = `
+                    <label>药物相互作用</label>
+                    <select name="drug_interaction">
+                        <option>无明显相互作用</option>
+                        <option>有轻微相互作用</option>
+                        <option>有明显相互作用</option>
+                        <option>不详</option>
+                    </select>
+                    <label>服药依从性</label>
+                    <select name="drug_compliance">
+                        <option>按时按量服药</option>
+                        <option>偶尔漏服</option>
+                        <option>经常漏服</option>
+                        <option>自行调整剂量</option>
+                        <option>已停药</option>
+                    </select>
+                `;
+                container.appendChild(interactionRow);
+            } else if (count == 1) {
+                const complianceRow = document.createElement('div');
+                complianceRow.className = 'form-row';
+                complianceRow.innerHTML = `
+                    <label>服药依从性</label>
+                    <select name="drug_compliance">
+                        <option>按时按量服药</option>
+                        <option>偶尔漏服</option>
+                        <option>经常漏服</option>
+                        <option>自行调整剂量</option>
+                        <option>已停药</option>
+                    </select>
+                `;
+                container.appendChild(complianceRow);
+            }
+        }
+        
+        // 为新增的toggleDisplay元素添加支持
+        function setupToggleDisplays() {
+            // 获取所有需要隐藏/显示的元素ID列表
+            const toggleIds = [
+                // 月经史
+                'menopause-info',
+                // 家族史
+                'father-health', 'mother-health', 'family-disease', 'siblings-health',
+                // 系统回顾
+                'weight-change',
+                // 既往史
+                'hypertension-detail', 'diabetes-detail', 'heart-disease-detail', 'stroke-detail',
+                'liver-disease-detail', 'kidney-disease-detail', 'cancer-detail', 'other-chronic-detail',
+                'hepatitis-detail', 'tuberculosis-detail', 'other-infection-detail',
+                'surgery-history-detail', 'trauma-detail', 'transfusion-detail',
+                'drug-allergy-detail', 'food-allergy-detail', 'other-allergy-detail', 'vaccination-detail',
+                // 个人史
+                'schistosomiasis-area', 'endemic-area', 'epidemic-area',
+                'toxic-exposure', 'dust-exposure', 'radiation-exposure', 'noise-exposure',
+                'smoking-detail', 'drinking-detail', 'drug-dependence', 'drug-abuse',
+                'sexual-history', 'std-history',
+                // 生育史
+                'spontaneous-abortion', 'induced-abortion', 'delivery-detail', 'newborn-health',
+                'breastfeeding', 'contraception', 'infertility', 'assisted-reproduction', 'spouse-fertility',
+                // 辅助检查
+                'blood-test', 'urine-test', 'liver-test', 'kidney-test', 
+                'xray-test', 'ct-test', 'mri-test', 'ultrasound-test', 'surgery-plan'
+            ];
+            
+            // 确保所有toggle元素初始状态为隐藏
+            toggleIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = 'none';
+                }
+            });
+        }
+        
+        function saveForm() {
+            // 获取所有表单数据
+            const formData = {};
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.name || input.placeholder) {
+                    const key = input.name || input.placeholder;
+                    formData[key] = input.value;
+                }
+            });
+            
+            // 特别保存药物数量选择
+            const drugCountSelect = document.getElementById('drug-count-select');
+            if (drugCountSelect) {
+                formData['drug_count'] = drugCountSelect.value;
+            }
+            
+            // 保存到本地存储
+            localStorage.setItem('consultationForm', JSON.stringify(formData));
+            alert('表单已保存到本地存储！');
+        }
+        
+        function clearForm() {
+            if (confirm('确定要清空所有内容吗？')) {
+                const inputs = document.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (input.type === 'text' || input.type === 'number' || input.type === 'tel' || input.type === 'date' || input.type === 'datetime-local') {
+                        input.value = '';
+                    } else if (input.type === 'select-one') {
+                        input.selectedIndex = 0;
+                    } else if (input.tagName === 'TEXTAREA') {
+                        input.value = '';
+                    }
+                });
+                
+                // 重置药物数量选择
+                const drugCountSelect = document.getElementById('drug-count-select');
+                if (drugCountSelect) {
+                    drugCountSelect.value = '0';
+                    generateDrugInputs(0);
+                }
+                
+                // 隐藏所有条件显示的元素
+                const hiddenElements = document.querySelectorAll(`
+                    .hidden, [id="menstrual-history"],
+                    [id*="menopause-"], [id*="father-"], [id*="mother-"], [id*="family-"], [id*="siblings-"],
+                    [id*="weight-"], [id*="hypertension-"], [id*="diabetes-"], [id*="heart-disease-"], [id*="stroke-"],
+                    [id*="liver-disease-"], [id*="kidney-disease-"], [id*="cancer-"], [id*="chronic-"],
+                    [id*="hepatitis-"], [id*="tuberculosis-"], [id*="infection-"], [id*="surgery-history-"],
+                    [id*="trauma-"], [id*="transfusion-"], [id*="allergy-"], [id*="vaccination-"],
+                    [id*="schistosomiasis-"], [id*="endemic-"], [id*="epidemic-"], [id*="toxic-"], [id*="dust-"],
+                    [id*="radiation-"], [id*="noise-"], [id*="smoking-"], [id*="drinking-"], [id*="drug-dependence"],
+                    [id*="drug-abuse"], [id*="sexual-"], [id*="std-"], [id*="abortion"], [id*="delivery-"],
+                    [id*="newborn-"], [id*="breastfeeding"], [id*="contraception"], [id*="infertility"],
+                    [id*="assisted-"], [id*="spouse-"], [id*="blood-"], [id*="urine-"], [id*="liver-test"],
+                    [id*="kidney-test"], [id*="xray-"], [id*="ct-"], [id*="mri-"], [id*="ultrasound-"], [id*="surgery-plan"]
+                `);
+                hiddenElements.forEach(element => {
+                    element.style.display = 'none';
+                });
+                
+                localStorage.removeItem('consultationForm');
+                alert('表单已清空！');
+            }
+        }
+        
+        // 页面加载时恢复保存的数据
+        window.addEventListener('load', function() {
+            // 初始化toggle显示状态
+            setupToggleDisplays();
+            
+            // 初始化药物输入框（默认显示"未用药"）
+            generateDrugInputs(0);
+            
+            const savedData = localStorage.getItem('consultationForm');
+            if (savedData) {
+                try {
+                    const formData = JSON.parse(savedData);
+                    
+                    // 先恢复药物数量选择
+                    if (formData['drug_count']) {
+                        const drugCountSelect = document.getElementById('drug-count-select');
+                        if (drugCountSelect) {
+                            drugCountSelect.value = formData['drug_count'];
+                            generateDrugInputs(formData['drug_count']);
+                        }
+                    }
+                    
+                    // 恢复其他表单数据
+                    Object.keys(formData).forEach(key => {
+                        if (key !== 'drug_count') {
+                            const input = document.querySelector(`[name="${key}"], [placeholder="${key}"]`);
+                            if (input && formData[key]) {
+                                input.value = formData[key];
+                            }
+                        }
+                    });
+                } catch (e) {
+                    console.error('恢复表单数据时出错:', e);
+                }
+            }
+        });
+        
+        // 添加导出功能
+        function exportToPDF() {
+            window.print();
+        }
+        
+        function exportToWord() {
+            // 获取表单数据
+            const formData = {};
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.value && (input.name || input.placeholder)) {
+                    const key = input.name || input.placeholder;
+                    formData[key] = input.value;
+                }
+            });
+            
+            // 创建Word文档内容
+            let content = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>问诊记录</title></head><body>';
+            content += '<h1 style="text-align:center;">问诊记录</h1>';
+            
+            // 添加药物数量信息
+            const drugCountSelect = document.getElementById('drug-count-select');
+            if (drugCountSelect && drugCountSelect.value !== '0') {
+                content += `<p><strong>用药种类数量：</strong>${drugCountSelect.options[drugCountSelect.selectedIndex].text}</p>`;
+            }
+            
+            Object.keys(formData).forEach(key => {
+                if (key !== 'drug_count') {
+                    content += `<p><strong>${key}：</strong>${formData[key]}</p>`;
+                }
+            });
+            
+            content += '</body></html>';
+            
+            // 创建下载链接
+            const blob = new Blob([content], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '问诊记录.doc';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</head>
+<body>
+    <h1>问诊助手</h1>
+
+    <!-- 基本信息 -->
+    <div class="section">
+        <h2>基本信息</h2>
+        <div class="form-row">
+            <strong>病人信息：</strong>
+            <label>姓名</label><input type="text" name="patient_name">
+            <label>性别</label>
+            <select onchange="onGenderChange(this)" name="patient_gender">
+                <option value="男">男</option>
+                <option value="女">女</option>
+            </select>
+            <label>年龄</label><input type="number" min="0" name="patient_age">
+            <label>住址</label><input type="text" name="patient_address">
+            <label>职业</label><input type="text" name="patient_occupation">
+            <label>单位</label><input type="text" name="patient_workplace">
+        </div>
+        <div class="form-row">
+            <strong>家属信息：</strong>
+            <label>姓名</label><input type="text" name="family_name">
+            <label>年龄</label><input type="number" min="0" name="family_age">
+            <label>关系</label>
+            <select name="family_relation">
+                <option>父母</option>
+                <option>配偶</option>
+                <option>子女</option>
+                <option>其他</option>
+            </select>
+            <label>联系电话</label><input type="tel" name="family_phone">
+        </div>
+    </div>
+
+    <!-- 主诉 -->
+    <div class="section">
+        <h2>主诉</h2>
+        <textarea rows="2" placeholder="请填写主诉（简要描述主要症状和持续时间）" name="chief_complaint"></textarea>
+    </div>
+
+    <!-- 现病史 -->
+    <div class="section">
+        <h2>现病史</h2>
+        <div class="form-row">
+            <strong>起病情况：</strong>
+            <label>起病时间</label><input type="text" placeholder="具体日期/时间">
+            <label>起病急缓</label>
+            <select>
+                <option>急性</option>
+                <option>亚急性</option>
+                <option>慢性</option>
+                <option>慢性急性发作</option>
+            </select>
+            <label>诱因</label><input type="text" placeholder="明确诱因/无明显诱因">
+        </div>
+        <div class="form-row">
+            <strong>主要症状特点：</strong>
+            <label>部位</label><input type="text" placeholder="症状发生部位">
+            <label>性质</label><input type="text" placeholder="疼痛性质、咳嗽特点等">
+            <label>程度</label>
+            <select>
+                <option>轻度</option>
+                <option>中度</option>
+                <option>重度</option>
+            </select>
+            <label>持续时间</label><input type="text" placeholder="持续时间/间歇性">
+            <label>频度</label><input type="text" placeholder="发作频率">
+        </div>
+        <div class="form-row">
+            <strong>缓解和加重因素：</strong>
+            <label>缓解因素</label><input type="text" placeholder="休息、药物、体位等">
+            <label>加重因素</label><input type="text" placeholder="活动、情绪、饮食等">
+        </div>
+        <div class="form-row">
+            <strong>病情发展演变：</strong>
+            <textarea rows="2" placeholder="症状变化过程、新症状出现、病情进展情况"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>伴随症状：</strong>
+            <textarea rows="2" placeholder="与主症状同时出现的其他症状"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>诊治经过：</strong>
+            <label>就诊医院</label><input type="text" placeholder="就诊医院名称">
+            <label>检查项目</label><input type="text" placeholder="已做检查项目">
+            <label>诊断结果</label><input type="text" placeholder="医生诊断">
+        </div>
+        <div class="form-row">
+            <strong>用药情况：</strong>
+            <label>用药种类数量</label>
+            <select onchange="generateDrugInputs(this.value)" id="drug-count-select">
+                <option value="0">未用药</option>
+                <option value="1">1种药物</option>
+                <option value="2">2种药物</option>
+                <option value="3">3种药物</option>
+                <option value="4">4种药物</option>
+                <option value="5">5种药物</option>
+            </select>
+        </div>
+        <div id="drug-inputs-container">
+            <!-- 药物输入框将在这里动态生成 -->
+        </div>
+        <div class="form-row">
+            <strong>一般情况：</strong>
+            <label>精神状态</label>
+            <select>
+                <option>良好</option>
+                <option>一般</option>
+                <option>欠佳</option>
+                <option>萎靡</option>
+            </select>
+            <label>食欲</label>
+            <select>
+                <option>正常</option>
+                <option>减退</option>
+                <option>亢进</option>
+                <option>无食欲</option>
+            </select>
+            <label>睡眠</label>
+            <select>
+                <option>正常</option>
+                <option>失眠</option>
+                <option>多梦</option>
+                <option>嗜睡</option>
+            </select>
+            <label>大便</label>
+            <select>
+                <option>正常</option>
+                <option>便秘</option>
+                <option>腹泻</option>
+                <option>不规律</option>
+            </select>
+            <label>小便</label>
+            <select>
+                <option>正常</option>
+                <option>尿频</option>
+                <option>尿急</option>
+                <option>尿痛</option>
+            </select>
+            <label>体重变化</label><input type="text" placeholder="增加/减少多少kg">
+        </div>
+    </div>
+
+    <!-- 既往史 -->
+    <div class="section">
+        <h2>既往史</h2>
+        <div class="form-row">
+            <strong>一般健康状况：</strong>
+            <label>既往健康状况</label>
+            <select>
+                <option>良好</option>
+                <option>一般</option>
+                <option>较差</option>
+            </select>
+            <label>体质状况</label>
+            <select>
+                <option>强壮</option>
+                <option>一般</option>
+                <option>虚弱</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>疾病史：</strong>
+            <label>高血压</label>
+            <select onchange="toggleDisplay('hypertension-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="hypertension-detail" class="hidden">
+                <input type="text" placeholder="确诊时间">
+                <input type="text" placeholder="最高血压值">
+                <input type="text" placeholder="治疗情况">
+                <div style="margin-top: 5px;">
+                    <input type="text" placeholder="用药名称(如XX压、XX洛尔等)">
+                    <input type="text" placeholder="用药剂量(如5mg qd)">
+                    <input type="text" placeholder="疗效评价">
+                </div>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>糖尿病</label>
+            <select onchange="toggleDisplay('diabetes-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="diabetes-detail" class="hidden">
+                <input type="text" placeholder="确诊时间">
+                <input type="text" placeholder="血糖控制情况">
+                <input type="text" placeholder="治疗方案">
+                <div style="margin-top: 5px;">
+                    <input type="text" placeholder="用药名称(如二甲双胍、胰岛素等)">
+                    <input type="text" placeholder="用药剂量">
+                    <input type="text" placeholder="血糖控制效果">
+                </div>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>心脏病</label>
+            <select onchange="toggleDisplay('heart-disease-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="heart-disease-detail" class="hidden">
+                <input type="text" placeholder="具体疾病名称">
+                <input type="text" placeholder="确诊时间">
+                <input type="text" placeholder="治疗情况">
+                <div style="margin-top: 5px;">
+                    <input type="text" placeholder="用药名称(如阿司匹林、硝酸甘油等)">
+                    <input type="text" placeholder="用药剂量">
+                    <input type="text" placeholder="症状改善情况">
+                </div>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>脑血管病</label>
+            <select onchange="toggleDisplay('stroke-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="stroke-detail" class="hidden">
+                <input type="text" placeholder="发病时间">
+                <input type="text" placeholder="病变部位">
+                <input type="text" placeholder="后遗症">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>肝病</label>
+            <select onchange="toggleDisplay('liver-disease-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="liver-disease-detail" class="hidden">
+                <input type="text" placeholder="具体病名">
+                <input type="text" placeholder="确诊时间">
+                <input type="text" placeholder="治疗经过">
+                <div style="margin-top: 5px;">
+                    <input type="text" placeholder="用药名称(如护肝药、抗病毒药等)">
+                    <input type="text" placeholder="用药剂量">
+                    <input type="text" placeholder="肝功能改善情况">
+                </div>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>肾病</label>
+            <select onchange="toggleDisplay('kidney-disease-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="kidney-disease-detail" class="hidden">
+                <input type="text" placeholder="具体病名">
+                <input type="text" placeholder="确诊时间">
+                <input type="text" placeholder="肾功能情况">
+                <div style="margin-top: 5px;">
+                    <input type="text" placeholder="用药名称(如ACEI/ARB、利尿剂等)">
+                    <input type="text" placeholder="用药剂量">
+                    <input type="text" placeholder="肾功能保护效果">
+                </div>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>恶性肿瘤</label>
+            <select onchange="toggleDisplay('cancer-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="cancer-detail" class="hidden">
+                <input type="text" placeholder="肿瘤类型">
+                <input type="text" placeholder="确诊时间">
+                <input type="text" placeholder="治疗经过">
+                <div style="margin-top: 5px;">
+                    <input type="text" placeholder="化疗/靶向药物名称">
+                    <input type="text" placeholder="治疗方案">
+                    <input type="text" placeholder="治疗效果">
+                </div>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>其他慢性病</label>
+            <select onchange="toggleDisplay('other-chronic-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="other-chronic-detail" class="hidden">
+                <textarea rows="2" placeholder="其他慢性疾病详情"></textarea>
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>传染病史：</strong>
+            <label>肝炎</label>
+            <select onchange="toggleDisplay('hepatitis-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="hepatitis-detail" class="hidden">
+                <input type="text" placeholder="肝炎类型">
+                <input type="text" placeholder="患病时间">
+                <input type="text" placeholder="治疗情况">
+                <div style="margin-top: 5px;">
+                    <input type="text" placeholder="抗病毒药物名称">
+                    <input type="text" placeholder="用药方案">
+                    <input type="text" placeholder="病毒载量/转氨酶变化">
+                </div>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>结核病</label>
+            <select onchange="toggleDisplay('tuberculosis-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="tuberculosis-detail" class="hidden">
+                <input type="text" placeholder="结核部位">
+                <input type="text" placeholder="患病时间">
+                <input type="text" placeholder="治疗情况">
+                <div style="margin-top: 5px;">
+                    <input type="text" placeholder="抗结核药物名称">
+                    <input type="text" placeholder="治疗方案">
+                    <input type="text" placeholder="治疗效果">
+                </div>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>其他传染病</label>
+            <select onchange="toggleDisplay('other-infection-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="other-infection-detail" class="hidden">
+                <input type="text" placeholder="具体病名">
+                <input type="text" placeholder="患病时间">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>手术外伤史：</strong>
+            <label>手术史</label>
+            <select onchange="toggleDisplay('surgery-history-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="surgery-history-detail" class="hidden">
+                <input type="text" placeholder="手术名称">
+                <input type="text" placeholder="手术时间">
+                <input type="text" placeholder="手术医院">
+                <input type="text" placeholder="麻醉方式">
+                <input type="text" placeholder="术后恢复情况">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>外伤史</label>
+            <select onchange="toggleDisplay('trauma-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="trauma-detail" class="hidden">
+                <input type="text" placeholder="外伤部位">
+                <input type="text" placeholder="外伤时间">
+                <input type="text" placeholder="外伤原因">
+                <input type="text" placeholder="治疗情况">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>输血史</label>
+            <select onchange="toggleDisplay('transfusion-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="transfusion-detail" class="hidden">
+                <input type="text" placeholder="输血时间">
+                <input type="text" placeholder="输血原因">
+                <input type="text" placeholder="输血量">
+                <input type="text" placeholder="不良反应">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>过敏史：</strong>
+            <label>药物过敏</label>
+            <select onchange="toggleDisplay('drug-allergy-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="drug-allergy-detail" class="hidden">
+                <input type="text" placeholder="过敏药物名称">
+                <input type="text" placeholder="过敏反应">
+                <input type="text" placeholder="处理经过">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>食物过敏</label>
+            <select onchange="toggleDisplay('food-allergy-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="food-allergy-detail" class="hidden">
+                <input type="text" placeholder="过敏食物">
+                <input type="text" placeholder="过敏症状">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>其他过敏</label>
+            <select onchange="toggleDisplay('other-allergy-detail', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="other-allergy-detail" class="hidden">
+                <input type="text" placeholder="过敏原">
+                <input type="text" placeholder="过敏症状">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>预防接种史：</strong>
+            <label>疫苗接种</label>
+            <select onchange="toggleDisplay('vaccination-detail', this.value)">
+                <option>按时接种</option>
+                <option>延迟接种</option>
+                <option>未完全接种</option>
+                <option>不详</option>
+            </select>
+            <span id="vaccination-detail" class="hidden">
+                <textarea rows="2" placeholder="具体接种情况、缺少的疫苗等"></textarea>
+            </span>
+        </div>
+    </div>
+
+    <!-- 个人史 -->
+    <div class="section">
+        <h2>个人史</h2>
+        <div class="form-row">
+            <strong>出生及居住史：</strong>
+            <label>出生地</label><input type="text" placeholder="出生省市">
+            <label>现居住地</label><input type="text" placeholder="现居住地址">
+            <label>居住年限</label><input type="text" placeholder="在此居住多久">
+        </div>
+        <div class="form-row">
+            <strong>疫区居住史：</strong>
+            <label>血吸虫病疫区</label>
+            <select onchange="toggleDisplay('schistosomiasis-area', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="schistosomiasis-area" class="hidden">
+                <input type="text" placeholder="疫区地点">
+                <input type="text" placeholder="居住时间">
+                <input type="text" placeholder="接触情况">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>地方病疫区</label>
+            <select onchange="toggleDisplay('endemic-area', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="endemic-area" class="hidden">
+                <input type="text" placeholder="地方病类型">
+                <input type="text" placeholder="疫区地点">
+                <input type="text" placeholder="居住时间">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>传染病疫区</label>
+            <select onchange="toggleDisplay('epidemic-area', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="epidemic-area" class="hidden">
+                <input type="text" placeholder="传染病类型">
+                <input type="text" placeholder="疫区地点">
+                <input type="text" placeholder="接触时间">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>职业史：</strong>
+            <label>职业</label><input type="text" placeholder="具体职业">
+            <label>工作年限</label><input type="text" placeholder="从事此职业多久">
+            <label>工作环境</label>
+            <select>
+                <option>良好</option>
+                <option>一般</option>
+                <option>较差</option>
+                <option>恶劣</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>职业危害接触史：</strong>
+            <label>有毒物质</label>
+            <select onchange="toggleDisplay('toxic-exposure', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="toxic-exposure" class="hidden">
+                <input type="text" placeholder="毒物名称">
+                <input type="text" placeholder="接触时间">
+                <input type="text" placeholder="防护措施">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>粉尘接触</label>
+            <select onchange="toggleDisplay('dust-exposure', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="dust-exposure" class="hidden">
+                <input type="text" placeholder="粉尘类型">
+                <input type="text" placeholder="接触时间">
+                <input type="text" placeholder="防护情况">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>放射性物质</label>
+            <select onchange="toggleDisplay('radiation-exposure', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="radiation-exposure" class="hidden">
+                <input type="text" placeholder="放射源类型">
+                <input type="text" placeholder="接触时间">
+                <input type="text" placeholder="防护措施">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>噪音接触</label>
+            <select onchange="toggleDisplay('noise-exposure', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="noise-exposure" class="hidden">
+                <input type="text" placeholder="噪音强度">
+                <input type="text" placeholder="接触时间">
+                <input type="text" placeholder="听力影响">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>生活习惯：</strong>
+            <label>吸烟史</label>
+            <select onchange="toggleDisplay('smoking-detail', this.value)">
+                <option>从不吸烟</option>
+                <option>已戒烟</option>
+                <option>吸烟</option>
+            </select>
+            <span id="smoking-detail" class="hidden">
+                <input type="number" placeholder="每天几支" min="0" max="100">
+                <input type="text" placeholder="吸烟年限">
+                <input type="text" placeholder="烟草类型(如中华、红塔山等)">
+                <input type="text" placeholder="戒烟时间(如已戒)">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>饮酒史</label>
+            <select onchange="toggleDisplay('drinking-detail', this.value)">
+                <option>从不饮酒</option>
+                <option>已戒酒</option>
+                <option>偶尔饮酒</option>
+                <option>经常饮酒</option>
+            </select>
+            <span id="drinking-detail" class="hidden">
+                <input type="text" placeholder="酒类种类">
+                <input type="text" placeholder="每日饮酒量">
+                <input type="text" placeholder="饮酒年限">
+                <input type="text" placeholder="戒酒时间(如已戒)">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>药物依赖</label>
+            <select onchange="toggleDisplay('drug-dependence', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="drug-dependence" class="hidden">
+                <input type="text" placeholder="药物名称">
+                <input type="text" placeholder="使用剂量">
+                <input type="text" placeholder="使用年限">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>毒品使用</label>
+            <select onchange="toggleDisplay('drug-abuse', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="drug-abuse" class="hidden">
+                <input type="text" placeholder="毒品类型">
+                <input type="text" placeholder="使用方式">
+                <input type="text" placeholder="使用年限">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>性生活史：</strong>
+            <label>性生活史</label>
+            <select onchange="toggleDisplay('sexual-history', this.value)">
+                <option>正常</option>
+                <option>异常</option>
+                <option>拒绝回答</option>
+            </select>
+            <span id="sexual-history" class="hidden">
+                <input type="text" placeholder="异常情况描述">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>性传播疾病史</label>
+            <select onchange="toggleDisplay('std-history', this.value)">
+                <option>无</option>
+                <option>有</option>
+                <option>不详</option>
+            </select>
+            <span id="std-history" class="hidden">
+                <input type="text" placeholder="疾病名称">
+                <input type="text" placeholder="患病时间">
+                <input type="text" placeholder="治疗情况">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>教育背景：</strong>
+            <label>文化程度</label>
+            <select>
+                <option>小学</option>
+                <option>初中</option>
+                <option>高中/中专</option>
+                <option>大专</option>
+                <option>本科</option>
+                <option>研究生及以上</option>
+                <option>文盲</option>
+            </select>
+            <label>专业</label><input type="text" placeholder="所学专业">
+        </div>
+        <div class="form-row">
+            <strong>经济状况：</strong>
+            <label>家庭经济状况</label>
+            <select>
+                <option>良好</option>
+                <option>中等</option>
+                <option>困难</option>
+                <option>贫困</option>
+            </select>
+            <label>医疗保险</label>
+            <select>
+                <option>城镇职工医保</option>
+                <option>城乡居民医保</option>
+                <option>公费医疗</option>
+                <option>商业保险</option>
+                <option>自费</option>
+                <option>其他</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 婚姻史 -->
+    <div class="section">
+        <h2>婚姻史</h2>
+        <div class="form-row">
+            是否结婚
+            <select onchange="toggleDisplay('married-info', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="married-info" class="hidden">
+                结婚时间 <input type="text" placeholder="结婚时间">
+                配偶健在
+                <select>
+                    <option>有</option>
+                    <option>无</option>
+                </select>
+                有无子女
+                <select onchange="toggleDisplay('children-info', this.value)">
+                    <option>无</option>
+                    <option>有</option>
+                </select>
+                <span id="children-info" class="hidden">
+                    子女人数 <input type="number" min="0">
+                </span>
+            </span>
+        </div>
+    </div>
+
+    <!-- 生育史 -->
+    <div class="section">
+        <h2>生育史</h2>
+        <div class="form-row">
+            <strong>妊娠史：</strong>
+            <label>妊娠次数</label><input type="number" min="0" placeholder="总妊娠次数">
+            <label>足月产</label><input type="number" min="0" placeholder="次">
+            <label>早产</label><input type="number" min="0" placeholder="次">
+            <label>流产</label><input type="number" min="0" placeholder="次">
+            <label>死胎</label><input type="number" min="0" placeholder="次">
+            <label>现存子女</label><input type="number" min="0" placeholder="人">
+        </div>
+        <div class="form-row">
+            <strong>流产史详情：</strong>
+            <label>自然流产</label>
+            <select onchange="toggleDisplay('spontaneous-abortion', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="spontaneous-abortion" class="hidden">
+                <input type="text" placeholder="流产次数">
+                <input type="text" placeholder="流产时间(孕周)">
+                <input type="text" placeholder="流产原因">
+            </span>
+        </div>
+        <div class="form-row">
+            <label>人工流产</label>
+            <select onchange="toggleDisplay('induced-abortion', this.value)">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <span id="induced-abortion" class="hidden">
+                <input type="text" placeholder="流产次数">
+                <input type="text" placeholder="流产方式">
+                <input type="text" placeholder="流产原因">
+                <input type="text" placeholder="术后恢复">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>分娩史：</strong>
+            <label>分娩方式</label>
+            <select onchange="toggleDisplay('delivery-detail', this.value)">
+                <option>无分娩史</option>
+                <option>自然分娩</option>
+                <option>剖宫产</option>
+                <option>助产分娩</option>
+            </select>
+            <span id="delivery-detail" class="hidden">
+                <input type="text" placeholder="分娩时间">
+                <input type="text" placeholder="孕周">
+                <input type="text" placeholder="产程时间">
+                <input type="text" placeholder="分娩医院">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>新生儿情况：</strong>
+            <label>新生儿体重</label><input type="text" placeholder="出生体重(kg)">
+            <label>新生儿健康状况</label>
+            <select onchange="toggleDisplay('newborn-health', this.value)">
+                <option>健康</option>
+                <option>异常</option>
+            </select>
+            <span id="newborn-health" class="hidden">
+                <textarea rows="2" placeholder="新生儿异常情况描述"></textarea>
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>产后情况：</strong>
+            <label>产褥期</label>
+            <select>
+                <option>正常</option>
+                <option>发热</option>
+                <option>感染</option>
+                <option>其他异常</option>
+            </select>
+            <label>哺乳情况</label>
+            <select onchange="toggleDisplay('breastfeeding', this.value)">
+                <option>纯母乳喂养</option>
+                <option>混合喂养</option>
+                <option>人工喂养</option>
+                <option>无法哺乳</option>
+            </select>
+            <span id="breastfeeding" class="hidden">
+                <input type="text" placeholder="哺乳时间">
+                <input type="text" placeholder="无法哺乳原因">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>避孕史：</strong>
+            <label>避孕方法</label>
+            <select onchange="toggleDisplay('contraception', this.value)">
+                <option>无避孕</option>
+                <option>安全期避孕</option>
+                <option>避孕套</option>
+                <option>口服避孕药</option>
+                <option>宫内节育器</option>
+                <option>结扎</option>
+                <option>其他</option>
+            </select>
+            <span id="contraception" class="hidden">
+                <input type="text" placeholder="使用时间">
+                <input type="text" placeholder="效果及副作用">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>不孕不育史：</strong>
+            <label>不孕症</label>
+            <select onchange="toggleDisplay('infertility', this.value)">
+                <option>无</option>
+                <option>原发性不孕</option>
+                <option>继发性不孕</option>
+            </select>
+            <span id="infertility" class="hidden">
+                <input type="text" placeholder="不孕时间">
+                <input type="text" placeholder="检查情况">
+                <input type="text" placeholder="治疗经过">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>辅助生殖史：</strong>
+            <label>辅助生殖技术</label>
+            <select onchange="toggleDisplay('assisted-reproduction', this.value)">
+                <option>无</option>
+                <option>人工授精</option>
+                <option>试管婴儿</option>
+                <option>其他</option>
+            </select>
+            <span id="assisted-reproduction" class="hidden">
+                <input type="text" placeholder="技术类型">
+                <input type="text" placeholder="实施时间">
+                <input type="text" placeholder="成功次数">
+                <input type="text" placeholder="实施医院">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>配偶情况：</strong>
+            <label>配偶年龄</label><input type="number" min="0" placeholder="岁">
+            <label>配偶健康状况</label>
+            <select>
+                <option>健康</option>
+                <option>一般</option>
+                <option>有疾病</option>
+            </select>
+            <label>配偶生育史</label>
+            <select onchange="toggleDisplay('spouse-fertility', this.value)">
+                <option>正常</option>
+                <option>异常</option>
+            </select>
+            <span id="spouse-fertility" class="hidden">
+                <textarea rows="2" placeholder="配偶生育异常情况"></textarea>
+            </span>
+        </div>
+    </div>
+
+    <!-- 月经史（仅女性显示） -->
+    <div class="section hidden" id="menstrual-history">
+        <h2>月经史</h2>
+        <div class="form-row">
+            <label>初潮年龄</label><input type="number" min="0" placeholder="岁">
+            <label>周期</label><input type="text" placeholder="天">
+            <label>经期</label><input type="text" placeholder="天">
+            <label>量</label>
+            <select>
+                <option>正常</option>
+                <option>过多</option>
+                <option>过少</option>
+            </select>
+            <label>痛经</label>
+            <select>
+                <option>无</option>
+                <option>轻度</option>
+                <option>中度</option>
+                <option>重度</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label>末次月经</label><input type="date">
+            <label>绝经</label>
+            <select onchange="toggleDisplay('menopause-info', this.value)">
+                <option>否</option>
+                <option>是</option>
+            </select>
+            <span id="menopause-info" class="hidden">
+                <label>绝经年龄</label><input type="number" min="0" placeholder="岁">
+            </span>
+        </div>
+    </div>
+
+    <!-- 家族史 -->
+    <div class="section">
+        <h2>家族史</h2>
+        <div class="form-row">
+            父亲健康状况
+            <select onchange="toggleDisplay('father-health', this.value)">
+                <option>健在</option>
+                <option>已故</option>
+                <option>不详</option>
+            </select>
+            <span id="father-health" class="hidden">
+                <input type="text" placeholder="死因/疾病史">
+                <label>享年</label><input type="number" min="0" placeholder="岁">
+            </span>
+        </div>
+        <div class="form-row">
+            母亲健康状况
+            <select onchange="toggleDisplay('mother-health', this.value)">
+                <option>健在</option>
+                <option>已故</option>
+                <option>不详</option>
+            </select>
+            <span id="mother-health" class="hidden">
+                <input type="text" placeholder="死因/疾病史">
+                <label>享年</label><input type="number" min="0" placeholder="岁">
+            </span>
+        </div>
+        <div class="form-row">
+            家族遗传病史
+            <select onchange="toggleDisplay('family-disease', this.value)">
+                <option>无</option>
+                <option>有</option>
+                <option>不详</option>
+            </select>
+            <span id="family-disease" class="hidden">
+                <input type="text" placeholder="请详细描述遗传病史">
+            </span>
+        </div>
+        <div class="form-row">
+            兄弟姐妹健康状况
+            <select onchange="toggleDisplay('siblings-health', this.value)">
+                <option>无兄弟姐妹</option>
+                <option>均健康</option>
+                <option>有疾病</option>
+                <option>不详</option>
+            </select>
+            <span id="siblings-health" class="hidden">
+                <input type="text" placeholder="请描述疾病情况">
+            </span>
+        </div>
+    </div>
+
+    <!-- 系统回顾 -->
+    <div class="section">
+        <h2>系统回顾</h2>
+        <div class="form-row">
+            <strong>一般状况：</strong>
+            <label>发热</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>乏力</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>盗汗</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>体重变化</label>
+            <select onchange="toggleDisplay('weight-change', this.value)">
+                <option>无</option>
+                <option>增加</option>
+                <option>减少</option>
+            </select>
+            <span id="weight-change" class="hidden">
+                <input type="text" placeholder="变化幅度和时间">
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>呼吸系统：</strong>
+            <label>咳嗽</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>咳痰</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>咯血</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>胸痛</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>呼吸困难</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>循环系统：</strong>
+            <label>心悸</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>胸闷</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>水肿</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>紫绀</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>消化系统：</strong>
+            <label>食欲</label>
+            <select>
+                <option>正常</option>
+                <option>减退</option>
+                <option>亢进</option>
+            </select>
+            <label>恶心</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>呕吐</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>腹痛</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>腹泻</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>便秘</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>泌尿生殖系统：</strong>
+            <label>尿频</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>尿急</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>尿痛</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>血尿</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>夜尿增多</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>神经系统：</strong>
+            <label>头痛</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>头晕</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>失眠</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>记忆力减退</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>肢体麻木</label>
+            <select>
+                <option>无</option>
+                <option>有</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 体格检查 -->
+    <div class="section">
+        <h2>体格检查</h2>
+        <div class="form-row">
+            <strong>生命体征：</strong>
+            <label>体温</label><input type="text" placeholder="°C" name="temperature">
+            <label>脉搏</label><input type="text" placeholder="次/分" name="pulse">
+            <label>呼吸</label><input type="text" placeholder="次/分" name="respiration">
+            <label>血压</label><input type="text" placeholder="mmHg" name="blood_pressure">
+            <label>身高</label><input type="text" placeholder="cm" name="height">
+            <label>体重</label><input type="text" placeholder="kg" name="weight">
+        </div>
+        <div class="form-row">
+            <strong>一般状态：</strong>
+            <label>发育状况</label>
+            <select name="development">
+                <option>正常</option>
+                <option>发育不良</option>
+                <option>发育迟缓</option>
+            </select>
+            <label>营养状况</label>
+            <select name="nutrition">
+                <option>良好</option>
+                <option>中等</option>
+                <option>不良</option>
+                <option>消瘦</option>
+                <option>肥胖</option>
+            </select>
+            <label>意识状态</label>
+            <select name="consciousness">
+                <option>清醒</option>
+                <option>嗜睡</option>
+                <option>昏睡</option>
+                <option>昏迷</option>
+                <option>谵妄</option>
+            </select>
+            <label>精神状态</label>
+            <select name="mental_state">
+                <option>合作</option>
+                <option>紧张</option>
+                <option>烦躁</option>
+                <option>抑郁</option>
+                <option>淡漠</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>体位步态：</strong>
+            <label>体位</label>
+            <select name="body_position">
+                <option>自主体位</option>
+                <option>被动体位</option>
+                <option>强迫体位</option>
+                <option>端坐位</option>
+                <option>侧卧位</option>
+            </select>
+            <label>步态</label>
+            <select name="gait">
+                <option>正常</option>
+                <option>跛行</option>
+                <option>剪刀步态</option>
+                <option>醉酒步态</option>
+                <option>帕金森步态</option>
+                <option>无法行走</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>皮肤黏膜：</strong>
+            <label>皮肤颜色</label>
+            <select name="skin_color">
+                <option>正常</option>
+                <option>苍白</option>
+                <option>发绀</option>
+                <option>黄染</option>
+                <option>潮红</option>
+                <option>色素沉着</option>
+            </select>
+            <label>皮肤弹性</label>
+            <select name="skin_elasticity">
+                <option>正常</option>
+                <option>弹性差</option>
+                <option>弹性消失</option>
+            </select>
+            <label>皮疹</label>
+            <select name="rash">
+                <option>无</option>
+                <option>有</option>
+            </select>
+            <label>水肿</label>
+            <select name="edema">
+                <option>无</option>
+                <option>轻度</option>
+                <option>中度</option>
+                <option>重度</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>淋巴结：</strong>
+            <label>浅表淋巴结</label>
+            <select name="lymph_nodes">
+                <option>未触及肿大</option>
+                <option>颈部肿大</option>
+                <option>腋窝肿大</option>
+                <option>腹股沟肿大</option>
+                <option>多处肿大</option>
+            </select>
+            <label>淋巴结质地</label>
+            <select name="lymph_texture">
+                <option>正常</option>
+                <option>质软</option>
+                <option>质韧</option>
+                <option>质硬</option>
+            </select>
+            <label>活动度</label>
+            <select name="lymph_mobility">
+                <option>正常</option>
+                <option>活动</option>
+                <option>固定</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>头颈部：</strong>
+            <label>头颅</label>
+            <select name="head">
+                <option>正常</option>
+                <option>小头畸形</option>
+                <option>大头畸形</option>
+                <option>外伤痕迹</option>
+            </select>
+            <label>眼部</label>
+            <select name="eyes">
+                <option>正常</option>
+                <option>结膜苍白</option>
+                <option>巩膜黄染</option>
+                <option>瞳孔异常</option>
+                <option>眼睑水肿</option>
+            </select>
+            <label>耳鼻喉</label>
+            <select name="ent">
+                <option>正常</option>
+                <option>听力减退</option>
+                <option>鼻塞</option>
+                <option>咽喉充血</option>
+                <option>扁桃体肿大</option>
+            </select>
+            <label>颈部</label>
+            <select name="neck">
+                <option>正常</option>
+                <option>颈静脉怒张</option>
+                <option>甲状腺肿大</option>
+                <option>颈部僵硬</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>胸部检查：</strong>
+            <label>胸廓</label>
+            <select name="chest_shape">
+                <option>正常</option>
+                <option>桶状胸</option>
+                <option>扁平胸</option>
+                <option>鸡胸</option>
+                <option>漏斗胸</option>
+                <option>不对称</option>
+            </select>
+            <label>呼吸运动</label>
+            <select name="breathing">
+                <option>正常</option>
+                <option>呼吸浅快</option>
+                <option>呼吸深慢</option>
+                <option>呼吸不规则</option>
+                <option>一侧减弱</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>肺部听诊：</strong>
+            <label>呼吸音</label>
+            <select name="breath_sounds">
+                <option>正常</option>
+                <option>呼吸音减弱</option>
+                <option>呼吸音消失</option>
+                <option>支气管呼吸音</option>
+                <option>粗糙呼吸音</option>
+            </select>
+            <label>啰音</label>
+            <select name="rales">
+                <option>无</option>
+                <option>湿啰音</option>
+                <option>干啰音</option>
+                <option>捻发音</option>
+                <option>胸膜摩擦音</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>心脏检查：</strong>
+            <label>心界</label>
+            <select name="heart_border">
+                <option>正常</option>
+                <option>左心扩大</option>
+                <option>右心扩大</option>
+                <option>全心扩大</option>
+            </select>
+            <label>心率</label>
+            <select name="heart_rate">
+                <option>正常</option>
+                <option>心动过速</option>
+                <option>心动过缓</option>
+                <option>心律不齐</option>
+            </select>
+            <label>心音</label>
+            <select name="heart_sounds">
+                <option>正常</option>
+                <option>心音减弱</option>
+                <option>心音分裂</option>
+                <option>奔马律</option>
+                <option>额外心音</option>
+            </select>
+            <label>心脏杂音</label>
+            <select name="murmur">
+                <option>无</option>
+                <option>收缩期杂音</option>
+                <option>舒张期杂音</option>
+                <option>连续性杂音</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>腹部检查：</strong>
+            <label>腹部外观</label>
+            <select name="abdomen_shape">
+                <option>平坦</option>
+                <option>膨隆</option>
+                <option>凹陷</option>
+                <option>不对称</option>
+            </select>
+            <label>腹壁静脉</label>
+            <select name="abdominal_veins">
+                <option>不显露</option>
+                <option>轻度怒张</option>
+                <option>明显怒张</option>
+                <option>侧支循环</option>
+            </select>
+            <label>腹部触诊</label>
+            <select name="abdomen_palpation">
+                <option>软</option>
+                <option>轻度紧张</option>
+                <option>肌紧张</option>
+                <option>板样强直</option>
+            </select>
+            <label>压痛</label>
+            <select name="tenderness">
+                <option>无</option>
+                <option>轻度压痛</option>
+                <option>明显压痛</option>
+                <option>反跳痛</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>腹部脏器：</strong>
+            <label>肝脏</label>
+            <select name="liver">
+                <option>未触及</option>
+                <option>肋下1cm</option>
+                <option>肋下2cm</option>
+                <option>肋下3cm以上</option>
+                <option>质软</option>
+                <option>质硬</option>
+            </select>
+            <label>脾脏</label>
+            <select name="spleen">
+                <option>未触及</option>
+                <option>肋下可及</option>
+                <option>明显肿大</option>
+            </select>
+            <label>肾脏</label>
+            <select name="kidneys">
+                <option>未触及</option>
+                <option>可触及</option>
+                <option>肿大</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>四肢检查：</strong>
+            <label>肌力</label>
+            <select name="muscle_strength">
+                <option>正常(5级)</option>
+                <option>4级</option>
+                <option>3级</option>
+                <option>2级</option>
+                <option>1级</option>
+                <option>0级</option>
+            </select>
+            <label>肌张力</label>
+            <select name="muscle_tone">
+                <option>正常</option>
+                <option>增高</option>
+                <option>减低</option>
+                <option>松弛</option>
+            </select>
+            <label>关节活动</label>
+            <select name="joint_mobility">
+                <option>正常</option>
+                <option>受限</option>
+                <option>僵硬</option>
+                <option>畸形</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>神经系统：</strong>
+            <label>生理反射</label>
+            <select name="physiological_reflex">
+                <option>正常</option>
+                <option>活跃</option>
+                <option>减弱</option>
+                <option>消失</option>
+            </select>
+            <label>病理反射</label>
+            <select name="pathological_reflex">
+                <option>阴性</option>
+                <option>巴氏征阳性</option>
+                <option>其他病理征阳性</option>
+            </select>
+            <label>脑膜刺激征</label>
+            <select name="meningeal_signs">
+                <option>阴性</option>
+                <option>颈强直</option>
+                <option>Kernig征阳性</option>
+                <option>Brudzinski征阳性</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 辅助检查 -->
+    <div class="section">
+        <h2>辅助检查</h2>
+        <div class="form-row">
+            <strong>实验室检查：</strong>
+            <label>血常规</label>
+            <select onchange="toggleDisplay('blood-test', this.value)">
+                <option>未查</option>
+                <option>已查</option>
+            </select>
+            <span id="blood-test" class="hidden">
+                <textarea rows="2" placeholder="血常规结果"></textarea>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>尿常规</label>
+            <select onchange="toggleDisplay('urine-test', this.value)">
+                <option>未查</option>
+                <option>已查</option>
+            </select>
+            <span id="urine-test" class="hidden">
+                <textarea rows="2" placeholder="尿常规结果"></textarea>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>肝功能</label>
+            <select onchange="toggleDisplay('liver-test', this.value)">
+                <option>未查</option>
+                <option>已查</option>
+            </select>
+            <span id="liver-test" class="hidden">
+                <textarea rows="2" placeholder="肝功能结果"></textarea>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>肾功能</label>
+            <select onchange="toggleDisplay('kidney-test', this.value)">
+                <option>未查</option>
+                <option>已查</option>
+            </select>
+            <span id="kidney-test" class="hidden">
+                <textarea rows="2" placeholder="肾功能结果"></textarea>
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>影像学检查：</strong>
+            <label>X线</label>
+            <select onchange="toggleDisplay('xray-test', this.value)">
+                <option>未查</option>
+                <option>已查</option>
+            </select>
+            <span id="xray-test" class="hidden">
+                <textarea rows="2" placeholder="X线检查结果"></textarea>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>CT</label>
+            <select onchange="toggleDisplay('ct-test', this.value)">
+                <option>未查</option>
+                <option>已查</option>
+            </select>
+            <span id="ct-test" class="hidden">
+                <textarea rows="2" placeholder="CT检查结果"></textarea>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>MRI</label>
+            <select onchange="toggleDisplay('mri-test', this.value)">
+                <option>未查</option>
+                <option>已查</option>
+            </select>
+            <span id="mri-test" class="hidden">
+                <textarea rows="2" placeholder="MRI检查结果"></textarea>
+            </span>
+        </div>
+        <div class="form-row">
+            <label>超声</label>
+            <select onchange="toggleDisplay('ultrasound-test', this.value)">
+                <option>未查</option>
+                <option>已查</option>
+            </select>
+            <span id="ultrasound-test" class="hidden">
+                <textarea rows="2" placeholder="超声检查结果"></textarea>
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>其他检查：</strong>
+            <textarea rows="2" placeholder="心电图、内镜、病理等其他检查"></textarea>
+        </div>
+    </div>
+
+    <!-- 诊断 -->
+    <div class="section">
+        <h2>诊断</h2>
+        <div class="form-row">
+            <strong>初步诊断：</strong>
+            <textarea rows="3" placeholder="根据病史、体检和辅助检查做出的初步诊断"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>鉴别诊断：</strong>
+            <textarea rows="3" placeholder="需要鉴别的疾病及鉴别要点"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>诊断依据：</strong>
+            <textarea rows="3" placeholder="支持诊断的主要依据"></textarea>
+        </div>
+    </div>
+
+    <!-- 治疗方案 -->
+    <div class="section">
+        <h2>治疗方案</h2>
+        <div class="form-row">
+            <strong>治疗目标：</strong>
+            <textarea rows="2" placeholder="短期和长期治疗目标"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>药物治疗：</strong>
+            <textarea rows="3" placeholder="药物名称、用法用量、疗程"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>非药物治疗：</strong>
+            <textarea rows="2" placeholder="物理治疗、心理治疗、饮食指导等"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>手术治疗：</strong>
+            <select onchange="toggleDisplay('surgery-plan', this.value)">
+                <option>不需要</option>
+                <option>需要</option>
+                <option>待定</option>
+            </select>
+            <span id="surgery-plan" class="hidden">
+                <textarea rows="2" placeholder="手术方案、时机、风险等"></textarea>
+            </span>
+        </div>
+        <div class="form-row">
+            <strong>随访计划：</strong>
+            <textarea rows="2" placeholder="复查时间、复查项目、注意事项"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>患者教育：</strong>
+            <textarea rows="3" placeholder="疾病宣教、生活指导、注意事项"></textarea>
+        </div>
+    </div>
+
+    <!-- 医生信息 -->
+    <div class="section">
+        <h2>医生信息</h2>
+        <div class="form-row">
+            <label>接诊医生</label><input type="text" placeholder="医生姓名">
+            <label>科室</label><input type="text" placeholder="科室名称">
+            <label>职称</label>
+            <select>
+                <option>住院医师</option>
+                <option>主治医师</option>
+                <option>副主任医师</option>
+                <option>主任医师</option>
+            </select>
+            <label>接诊时间</label><input type="datetime-local">
+        </div>
+        <div class="form-row">
+            <strong>医生签名：</strong>
+            <input type="text" placeholder="医生签名" style="width: 200px;">
+        </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="section" style="text-align: center;">
+        <button type="button" onclick="saveForm()" style="background-color: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">💾 保存</button>
+        <button type="button" onclick="clearForm()" style="background-color: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">🗑️ 清空</button>
+        <button type="button" onclick="exportToPDF()" style="background-color: #e74c3c; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📄 打印/PDF</button>
+        <button type="button" onclick="exportToWord()" style="background-color: #2980b9; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📝 导出Word</button>
+    </div>
+</body>
+</html>
