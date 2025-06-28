@@ -498,26 +498,6 @@
                 'blood-test', 'urine-test', 'liver-test', 'kidney-test', 
                 'xray-test', 'ct-test', 'mri-test', 'ultrasound-test', 'surgery-plan'
             ];
-                'hypertension-detail', 'diabetes-detail', 'heart-disease-detail', 'stroke-detail',
-                'liver-disease-detail', 'kidney-disease-detail', 'cancer-detail', 'other-chronic-detail',
-                'hepatitis-detail', 'tuberculosis-detail', 'other-infection-detail',
-                'surgery-history-detail', 'trauma-detail', 'transfusion-detail',
-                'drug-allergy-detail', 'food-allergy-detail', 'other-allergy-detail', 'vaccination-detail',
-                // 个人史
-                'schistosomiasis-area', 'endemic-area', 'epidemic-area',
-                'toxic-exposure', 'dust-exposure', 'radiation-exposure', 'noise-exposure',
-                'smoking-detail', 'drinking-detail', 'drug-dependence', 'drug-abuse',
-                'sexual-history', 'std-history',
-                // 生育史
-                'spontaneous-abortion', 'induced-abortion', 'delivery-detail', 'newborn-health',
-                'breastfeeding', 'contraception', 'infertility', 'assisted-reproduction', 'spouse-fertility',
-                // 体格检查详情
-                'edema-detail', 'rash-detail', 'lymph-detail', 'tenderness-detail', 
-                'liver-detail', 'spleen-detail', 'muscle-strength-detail', 'joint-detail',
-                // 辅助检查
-                'blood-test', 'urine-test', 'liver-test', 'kidney-test', 
-                'xray-test', 'ct-test', 'mri-test', 'ultrasound-test', 'surgery-plan'
-            ];
             
             // 确保所有toggle元素初始状态为隐藏
             toggleIds.forEach(id => {
@@ -631,6 +611,66 @@
             }
         });
         
+        // 手动恢复数据功能
+        function restoreForm() {
+            const savedData = localStorage.getItem('consultationForm');
+            if (savedData) {
+                if (confirm('确定要恢复保存的数据吗？当前内容将被覆盖。')) {
+                    location.reload(); // 重新加载页面来恢复数据
+                }
+            } else {
+                alert('没有找到保存的数据！');
+            }
+        }
+        
+        // 加载常用模板
+        function loadTemplate() {
+            const templates = {
+                '常规门诊模板': {
+                    'patient_gender': '男',
+                    'patient_age': '45',
+                    'marital_status': '已婚',
+                    'patient_ethnicity': '汉族',
+                    'insurance_type': '城镇职工基本医疗保险',
+                    'history_source': '患者本人',
+                    'history_reliability': '可靠',
+                    'record_type': '门诊病历'
+                },
+                '急诊模板': {
+                    'record_type': '急诊病历',
+                    'history_source': '患者本人',
+                    'history_reliability': '基本可靠',
+                    'rest_requirement': '适当休息',
+                    'diet_requirement': '普通饮食'
+                },
+                '住院模板': {
+                    'record_type': '住院病历',
+                    'history_source': '患者本人+家属补充',
+                    'history_reliability': '可靠',
+                    'rest_requirement': '卧床休息',
+                    'diet_requirement': '软食'
+                }
+            };
+            
+            const templateNames = Object.keys(templates);
+            const selectedTemplate = prompt('请选择模板：\n' + templateNames.map((name, index) => `${index + 1}. ${name}`).join('\n') + '\n\n请输入数字选择:');
+            
+            if (selectedTemplate && selectedTemplate >= 1 && selectedTemplate <= templateNames.length) {
+                const templateName = templateNames[selectedTemplate - 1];
+                const templateData = templates[templateName];
+                
+                // 应用模板数据
+                Object.keys(templateData).forEach(key => {
+                    const input = document.querySelector(`[name="${key}"]`);
+                    if (input) {
+                        input.value = templateData[key];
+                    }
+                });
+                
+                alert(`已加载"${templateName}"模板！`);
+            }
+        }
+        
         // 添加导出功能
         function exportToPDF() {
             window.print();
@@ -691,22 +731,68 @@
                 <option value="女">女</option>
             </select>
             <label>年龄</label><input type="number" min="0" name="patient_age">
-            <label>住址</label><input type="text" name="patient_address">
-            <label>职业</label><input type="text" name="patient_occupation">
-            <label>单位</label><input type="text" name="patient_workplace">
+            <label>民族</label><input type="text" placeholder="汉族" name="patient_ethnicity">
+            <label>婚姻状况</label>
+            <select name="marital_status">
+                <option>未婚</option>
+                <option>已婚</option>
+                <option>离异</option>
+                <option>丧偶</option>
+            </select>
         </div>
         <div class="form-row">
-            <strong>家属信息：</strong>
-            <label>姓名</label><input type="text" name="family_name">
-            <label>年龄</label><input type="number" min="0" name="family_age">
+            <label>出生地</label><input type="text" name="birth_place">
+            <label>现住址</label><input type="text" name="current_address">
+            <label>职业</label><input type="text" name="patient_occupation">
+            <label>工作单位</label><input type="text" name="patient_workplace">
+            <label>入院日期</label><input type="date" name="admission_date">
+            <label>记录日期</label><input type="date" name="record_date">
+        </div>
+        <div class="form-row">
+            <strong>联系方式：</strong>
+            <label>患者电话</label><input type="tel" name="patient_phone">
+            <label>身份证号</label><input type="text" name="patient_id">
+            <label>医保类型</label>
+            <select name="insurance_type">
+                <option>城镇职工基本医疗保险</option>
+                <option>城乡居民基本医疗保险</option>
+                <option>新型农村合作医疗</option>
+                <option>公费医疗</option>
+                <option>商业保险</option>
+                <option>自费</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <strong>紧急联系人：</strong>
+            <label>姓名</label><input type="text" name="emergency_contact_name">
             <label>关系</label>
-            <select name="family_relation">
-                <option>父母</option>
+            <select name="emergency_contact_relation">
                 <option>配偶</option>
+                <option>父母</option>
                 <option>子女</option>
+                <option>兄弟姐妹</option>
+                <option>其他亲属</option>
+                <option>朋友</option>
+                <option>同事</option>
+            </select>
+            <label>联系电话</label><input type="tel" name="emergency_contact_phone">
+        </div>
+        <div class="form-row">
+            <strong>病史来源：</strong>
+            <select name="history_source">
+                <option>患者本人</option>
+                <option>家属代述</option>
+                <option>患者本人+家属补充</option>
+                <option>既往病历</option>
                 <option>其他</option>
             </select>
-            <label>联系电话</label><input type="tel" name="family_phone">
+            <label>可靠程度</label>
+            <select name="history_reliability">
+                <option>可靠</option>
+                <option>基本可靠</option>
+                <option>不够可靠</option>
+                <option>不可靠</option>
+            </select>
         </div>
     </div>
 
@@ -2363,16 +2449,34 @@
     <div class="section">
         <h2>诊断</h2>
         <div class="form-row">
-            <strong>初步诊断：</strong>
-            <textarea rows="3" placeholder="根据病史、体检和辅助检查做出的初步诊断"></textarea>
+            <strong>主要诊断：</strong>
+            <input type="text" placeholder="主要疾病诊断" name="primary_diagnosis">
+            <label>诊断时间</label><input type="date" name="primary_diagnosis_date">
+            <label>ICD编码</label><input type="text" placeholder="ICD-10编码" name="primary_icd_code">
         </div>
         <div class="form-row">
-            <strong>鉴别诊断：</strong>
-            <textarea rows="3" placeholder="需要鉴别的疾病及鉴别要点"></textarea>
+            <strong>其他诊断：</strong>
+            <textarea rows="3" placeholder="其他相关诊断，每行一个" name="other_diagnoses"></textarea>
         </div>
         <div class="form-row">
             <strong>诊断依据：</strong>
-            <textarea rows="3" placeholder="支持诊断的主要依据"></textarea>
+            <textarea rows="3" placeholder="支持主要诊断的病史、体征、检查结果等依据" name="diagnosis_basis"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>鉴别诊断：</strong>
+            <textarea rows="3" placeholder="需要排除的疾病及鉴别要点" name="differential_diagnosis"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>诊断分期/分级：</strong>
+            <input type="text" placeholder="如肿瘤TNM分期、心功能分级等" name="disease_staging">
+            <label>病情评估</label>
+            <select name="condition_assessment">
+                <option>稳定</option>
+                <option>好转</option>
+                <option>恶化</option>
+                <option>危重</option>
+                <option>临床治愈</option>
+            </select>
         </div>
     </div>
 
@@ -2380,35 +2484,89 @@
     <div class="section">
         <h2>治疗方案</h2>
         <div class="form-row">
-            <strong>治疗目标：</strong>
-            <textarea rows="2" placeholder="短期和长期治疗目标"></textarea>
+            <strong>治疗原则：</strong>
+            <textarea rows="2" placeholder="总体治疗原则和目标" name="treatment_principle"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>一般治疗：</strong>
+            <label>休息</label>
+            <select name="rest_requirement">
+                <option>一般活动</option>
+                <option>适当休息</option>
+                <option>卧床休息</option>
+                <option>绝对卧床</option>
+            </select>
+            <label>饮食</label>
+            <select name="diet_requirement">
+                <option>普通饮食</option>
+                <option>软食</option>
+                <option>流质饮食</option>
+                <option>禁食</option>
+                <option>特殊饮食</option>
+            </select>
+            <input type="text" placeholder="特殊饮食要求" name="special_diet">
         </div>
         <div class="form-row">
             <strong>药物治疗：</strong>
-            <textarea rows="3" placeholder="药物名称、用法用量、疗程"></textarea>
-        </div>
-        <div class="form-row">
-            <strong>非药物治疗：</strong>
-            <textarea rows="2" placeholder="物理治疗、心理治疗、饮食指导等"></textarea>
+            <textarea rows="4" placeholder="具体用药方案：&#10;1. 药物名称 剂量 用法 疗程&#10;2. 药物名称 剂量 用法 疗程&#10;注明注意事项和不良反应监测" name="medication_plan"></textarea>
         </div>
         <div class="form-row">
             <strong>手术治疗：</strong>
-            <select onchange="toggleDisplay('surgery-plan', this.value)">
+            <select onchange="toggleDisplay('surgery-plan', this.value)" name="surgery_needed">
                 <option>不需要</option>
-                <option>需要</option>
-                <option>待定</option>
+                <option>择期手术</option>
+                <option>急诊手术</option>
+                <option>待进一步评估</option>
             </select>
             <span id="surgery-plan" class="hidden">
-                <textarea rows="2" placeholder="手术方案、时机、风险等"></textarea>
+                <label>手术名称</label><input type="text" placeholder="手术名称" name="surgery_name">
+                <label>手术时机</label><input type="text" placeholder="手术时机" name="surgery_timing">
+                <textarea rows="2" placeholder="手术指征、方案、风险评估" name="surgery_details"></textarea>
             </span>
         </div>
         <div class="form-row">
-            <strong>随访计划：</strong>
-            <textarea rows="2" placeholder="复查时间、复查项目、注意事项"></textarea>
+            <strong>其他治疗：</strong>
+            <label>物理治疗</label>
+            <select name="physical_therapy">
+                <option>不需要</option>
+                <option>需要</option>
+            </select>
+            <label>心理治疗</label>
+            <select name="psychological_therapy">
+                <option>不需要</option>
+                <option>需要</option>
+            </select>
+            <label>康复治疗</label>
+            <select name="rehabilitation">
+                <option>不需要</option>
+                <option>需要</option>
+            </select>
+            <textarea rows="2" placeholder="其他治疗措施详情" name="other_treatments"></textarea>
         </div>
         <div class="form-row">
-            <strong>患者教育：</strong>
-            <textarea rows="3" placeholder="疾病宣教、生活指导、注意事项"></textarea>
+            <strong>监测要求：</strong>
+            <textarea rows="2" placeholder="生命体征监测、实验室指标监测、影像学复查等" name="monitoring_requirements"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>随访计划：</strong>
+            <label>随访时间</label><input type="text" placeholder="如1周后、1个月后" name="followup_schedule">
+            <textarea rows="2" placeholder="随访内容：复查项目、评估指标、调整方案依据" name="followup_content"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>患者宣教：</strong>
+            <textarea rows="3" placeholder="疾病知识宣教、用药指导、生活方式建议、注意事项、复诊指征" name="patient_education"></textarea>
+        </div>
+        <div class="form-row">
+            <strong>预后评估：</strong>
+            <select name="prognosis">
+                <option>良好</option>
+                <option>较好</option>
+                <option>一般</option>
+                <option>较差</option>
+                <option>差</option>
+                <option>待观察</option>
+            </select>
+            <textarea rows="1" placeholder="预后评估说明" name="prognosis_notes"></textarea>
         </div>
     </div>
 
@@ -2416,29 +2574,48 @@
     <div class="section">
         <h2>医生信息</h2>
         <div class="form-row">
-            <label>接诊医生</label><input type="text" placeholder="医生姓名">
-            <label>科室</label><input type="text" placeholder="科室名称">
+            <strong>接诊信息：</strong>
+            <label>接诊医生</label><input type="text" placeholder="医生姓名" name="attending_doctor">
+            <label>科室</label><input type="text" placeholder="科室名称" name="department">
             <label>职称</label>
-            <select>
+            <select name="doctor_title">
                 <option>住院医师</option>
                 <option>主治医师</option>
                 <option>副主任医师</option>
                 <option>主任医师</option>
             </select>
-            <label>接诊时间</label><input type="datetime-local">
+            <label>接诊时间</label><input type="datetime-local" name="consultation_time">
         </div>
         <div class="form-row">
-            <strong>医生签名：</strong>
-            <input type="text" placeholder="医生签名" style="width: 200px;">
+            <label>病历类型</label>
+            <select name="record_type">
+                <option>门诊病历</option>
+                <option>急诊病历</option>
+                <option>住院病历</option>
+                <option>会诊记录</option>
+            </select>
+            <label>病历编号</label><input type="text" placeholder="病历号" name="medical_record_number">
+            <label>上级医师</label><input type="text" placeholder="上级医师姓名" name="supervising_doctor">
+        </div>
+        <div class="form-row">
+            <strong>签名确认：</strong>
+            <label>医生签名</label><input type="text" placeholder="医生签名" name="doctor_signature">
+            <label>审核时间</label><input type="datetime-local" name="review_time">
+        </div>
+        <div class="form-row">
+            <strong>备注：</strong>
+            <textarea rows="2" placeholder="其他需要说明的情况" name="medical_notes"></textarea>
         </div>
     </div>
 
     <!-- 操作按钮 -->
     <div class="section" style="text-align: center;">
-        <button type="button" onclick="saveForm()" style="background-color: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">💾 保存</button>
-        <button type="button" onclick="clearForm()" style="background-color: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">🗑️ 清空</button>
+        <button type="button" onclick="saveForm()" style="background-color: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">💾 保存到本地</button>
+        <button type="button" onclick="clearForm()" style="background-color: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">🗑️ 清空表单</button>
+        <button type="button" onclick="loadTemplate()" style="background-color: #f39c12; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📋 加载模板</button>
         <button type="button" onclick="exportToPDF()" style="background-color: #e74c3c; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📄 打印/PDF</button>
         <button type="button" onclick="exportToWord()" style="background-color: #2980b9; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📝 导出Word</button>
+        <button type="button" onclick="restoreForm()" style="background-color: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">🔄 恢复数据</button>
     </div>
 </body>
 </html>
