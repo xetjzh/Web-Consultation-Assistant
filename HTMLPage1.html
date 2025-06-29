@@ -181,74 +181,21 @@
                 display: none !important;
             }
             
-            span[id*="relief-"], 
-            span[id*="disease-"], 
-            span[id*="surgery-"], 
-            span[id*="allergy-"], 
-            span[id*="vaccine-"], 
-            span[id*="local-"], 
-            span[id*="long-"], 
-            span[id*="epidemic-"], 
-            span[id*="hazard-"], 
-            span[id*="smoke-"], 
-            span[id*="drink-"], 
-            span[id*="drug-"], 
-            span[id*="married-"], 
-            span[id*="children-"],
-            span[id*="menopause-"],
-            span[id*="father-"],
-            span[id*="mother-"],
-            span[id*="family-"],
-            span[id*="siblings-"],
-            span[id*="weight-"],
-            span[id*="hypertension-"],
-            span[id*="diabetes-"],
-            span[id*="heart-disease-"],
-            span[id*="stroke-"],
-            span[id*="liver-disease-"],
-            span[id*="kidney-disease-"],
-            span[id*="cancer-"],
-            span[id*="chronic-"],
-            span[id*="hepatitis-"],
-            span[id*="tuberculosis-"],
-            span[id*="infection-"],
-            span[id*="surgery-history-"],
-            span[id*="trauma-"],
-            span[id*="transfusion-"],
-            span[id*="drug-allergy-"],
-            span[id*="food-allergy-"],
-            span[id*="other-allergy-"],
-            span[id*="vaccination-"],
-            span[id*="schistosomiasis-"],
-            span[id*="endemic-"],
-            span[id*="epidemic-area"],
-            span[id*="toxic-"],
-            span[id*="dust-"],
-            span[id*="radiation-"],
-            span[id*="noise-"],
-            span[id*="smoking-"],
-            span[id*="drinking-"],
-            span[id*="drug-dependence"],
-            span[id*="drug-abuse"],
-            span[id*="sexual-"],
-            span[id*="std-"],
-            span[id*="abortion"],
-            span[id*="delivery-"],
-            span[id*="newborn-"],
-            span[id*="breastfeeding"],
-            span[id*="contraception"],
-            span[id*="infertility"],
-            span[id*="assisted-"],
-            span[id*="spouse-"],
-            span[id*="blood-"],
-            span[id*="urine-"],
-            span[id*="liver-test"],
-            span[id*="kidney-test"],
-            span[id*="xray-"],
-            span[id*="ct-"],
-            span[id*="mri-"],
-            span[id*="ultrasound-"],
-            span[id*="surgery-plan"] {
+            /* 移动端详情展示区域样式优化 - 不强制隐藏，让JavaScript控制显示 */
+            span[id$="-detail"]:not(.hidden),
+            span[id$="-info"]:not(.hidden),
+            span[id$="-history"]:not(.hidden),
+            span[id$="-area"]:not(.hidden),
+            span[id$="-exposure"]:not(.hidden),
+            span[id$="-dependence"]:not(.hidden),
+            span[id$="-abuse"]:not(.hidden),
+            span[id$="-abortion"]:not(.hidden),
+            span[id$="-health"]:not(.hidden),
+            span[id$="-test"]:not(.hidden),
+            span[id$="-plan"]:not(.hidden),
+            span[id*="relief-"]:not(.hidden),
+            span[id*="options"]:not(.hidden) {
+                display: block !important;
                 width: 100%;
                 margin-top: 8px;
                 padding: 8px;
@@ -380,9 +327,46 @@
                 display: none !important;
             }
         }
+        
+        /* 移动端疾病史详情特殊处理 */
+        span[id$="-detail"] div {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        span[id$="-detail"] div input,
+        span[id$="-detail"] div select,
+        span[id$="-detail"] div textarea {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        
+        /* 确保条件显示元素在移动端正确布局 */
+        @media (max-width: 768px) {
+            span[id$="-detail"]:not(.hidden),
+            span[id$="-info"]:not(.hidden),
+            span[id$="-area"]:not(.hidden),
+            span[id$="-exposure"]:not(.hidden),
+            span[id$="-history"]:not(.hidden) {
+                display: block !important;
+                width: 100% !important;
+                box-sizing: border-box;
+            }
+        }
     </style>    <script>
         function toggleDisplay(id, value, showValue = "有") {
-            document.getElementById(id).style.display = (value === showValue) ? "block" : "none";
+            const element = document.getElementById(id);
+            if (element) {
+                if (value === showValue) {
+                    element.style.display = "block";
+                    element.classList.remove('hidden');
+                } else {
+                    element.style.display = "none";
+                    element.classList.add('hidden');
+                }
+            }
         }
         function onGenderChange(sel) {
             document.getElementById('menstrual-history').style.display = (sel.value === "女") ? "block" : "none";
@@ -496,7 +480,9 @@
                 'liver-detail', 'spleen-detail', 'muscle-strength-detail', 'joint-detail',
                 // 辅助检查
                 'blood-test', 'urine-test', 'liver-test', 'kidney-test', 
-                'xray-test', 'ct-test', 'mri-test', 'ultrasound-test', 'surgery-plan'
+                'xray-test', 'ct-test', 'mri-test', 'ultrasound-test', 'surgery-plan',
+                // 症状缓解相关
+                'relief-rest', 'relief-medicine', 'relief-other', 'relief-options', 'no-relief'
             ];
             
             // 确保所有toggle元素初始状态为隐藏
@@ -504,6 +490,7 @@
                 const element = document.getElementById(id);
                 if (element) {
                     element.style.display = 'none';
+                    element.classList.add('hidden');
                 }
             });
         }
@@ -578,6 +565,9 @@
         window.addEventListener('load', function() {
             // 初始化toggle显示状态
             setupToggleDisplays();
+            
+            // 移动端兼容性增强
+            enhanceMobileCompatibility();
             
             // 初始化药物输入框（默认显示"未用药"）
             generateDrugInputs(0);
@@ -713,6 +703,42 @@
             a.download = '问诊记录.doc';
             a.click();
             URL.revokeObjectURL(url);
+        }
+        
+        // 移动端兼容性增强
+        function enhanceMobileCompatibility() {
+            // 检测是否为移动设备
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // 为所有select元素添加touch事件优化
+                const selects = document.querySelectorAll('select');
+                selects.forEach(select => {
+                    select.addEventListener('change', function() {
+                        // 确保在移动端选择后立即执行相应的函数
+                        if (this.onchange) {
+                            this.onchange();
+                        }
+                    });
+                });
+                
+                // 确保疾病史详情在移动端正确显示
+                const diseaseSelects = document.querySelectorAll('select[onchange*="toggleDisplay"]');
+                diseaseSelects.forEach(select => {
+                    select.addEventListener('change', function() {
+                        // 强制重新计算布局
+                        setTimeout(() => {
+                            const targetId = this.getAttribute('onchange').match(/toggleDisplay\('([^']+)'/);
+                            if (targetId && targetId[1]) {
+                                const targetElement = document.getElementById(targetId[1]);
+                                if (targetElement && !targetElement.classList.contains('hidden')) {
+                                    targetElement.style.display = 'block';
+                                }
+                            }
+                        }, 100);
+                    });
+                });
+            }
         }
     </script>
 </head>
