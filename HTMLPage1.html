@@ -1,45 +1,107 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>问诊助手</title>    <style>
+        /* 导入现代字体 */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
         /* 基础样式 */
         * {
             box-sizing: border-box;
         }
         
         body { 
-            font-family: Arial, sans-serif; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
             padding: 15px; 
             line-height: 1.6;
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* 背景装饰 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
         
         h1 {
             text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 24px;
+            color: #fff;
+            margin-bottom: 30px;
+            font-size: 32px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            letter-spacing: -0.5px;
         }
         
         .section { 
-            background: white;
-            border: 1px solid #ddd; 
-            padding: 16px; 
-            margin-bottom: 15px; 
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 24px; 
+            margin-bottom: 20px; 
+            border-radius: 16px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                0 2px 16px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.15),
+                0 4px 20px rgba(0, 0, 0, 0.08);
         }
         
         .section h2 { 
             margin-top: 0; 
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             color: #2c3e50;
-            font-size: 18px;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 8px;
+            font-size: 20px;
+            font-weight: 600;
+            border-bottom: none;
+            padding-bottom: 0;
+            position: relative;
+            padding-left: 16px;
+        }
+        
+        .section h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
         }
         
         .hidden { 
@@ -47,105 +109,185 @@
         }
         
         .form-row { 
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            padding: 8px 0;
         }
         
         label { 
-            font-weight: bold;
-            color: #555;
-            min-width: 80px;
+            font-weight: 500;
+            color: #4a5568;
+            min-width: 90px;
             flex-shrink: 0;
+            font-size: 14px;
+        }
+        
+        strong {
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 15px;
+            margin-right: 8px;
         }
         
         input[type="text"], 
         input[type="number"], 
         input[type="tel"],
+        input[type="date"],
         select, 
         textarea {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
             font-size: 14px;
-            background-color: white;
-            transition: border-color 0.3s ease;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            color: #2d3748;
         }
         
         input[type="text"]:focus, 
         input[type="number"]:focus, 
         input[type="tel"]:focus,
+        input[type="date"]:focus,
         select:focus, 
         textarea:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+            border-color: #667eea;
+            box-shadow: 
+                0 0 0 3px rgba(102, 126, 234, 0.1),
+                0 4px 12px rgba(102, 126, 234, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        input[type="text"]:hover,
+        input[type="number"]:hover,
+        input[type="tel"]:hover,
+        input[type="date"]:hover,
+        select:hover,
+        textarea:hover {
+            border-color: #cbd5e0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        select {
+            cursor: pointer;
+            background: #ffffff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") no-repeat right 12px center/16px 16px;
+            appearance: none;
+            padding-right: 40px;
         }
         
         textarea {
             width: 100%;
-            min-height: 80px;
+            min-height: 100px;
             resize: vertical;
             font-family: inherit;
+            line-height: 1.5;
         }
         
         /* 疾病史用药详情样式 */
         .form-row span div {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
-            padding: 8px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            border-left: 3px solid #27ae60;
+            gap: 12px;
+            margin-top: 12px;
+            padding: 16px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 12px;
+            border-left: 4px solid #48bb78;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
         
         .form-row span div input {
             flex: 1;
-            min-width: 150px;
-        }
-        
-        select {
-            cursor: pointer;
-            background-color: white;
+            min-width: 160px;
         }
         
         /* 移动端适配 */
         @media (max-width: 768px) {
             body {
-                padding: 10px;
+                padding: 12px;
             }
             
             h1 {
-                font-size: 20px;
-                margin-bottom: 15px;
+                font-size: 26px;
+                margin-bottom: 20px;
             }
             
             .section {
-                padding: 12px;
-                margin-bottom: 12px;
+                padding: 20px;
+                margin-bottom: 16px;
+                border-radius: 12px;
             }
             
             .section h2 {
-                font-size: 16px;
-                margin-bottom: 12px;
+                font-size: 18px;
+                margin-bottom: 16px;
+                padding-left: 12px;
             }
             
             .form-row {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 6px;
-                margin-bottom: 12px;
+                gap: 8px;
+                margin-bottom: 16px;
+                padding: 6px 0;
             }
             
             .form-row > strong {
                 width: 100%;
-                margin-bottom: 8px;
-                color: #2c3e50;
-                font-size: 14px;
+                margin-bottom: 12px;
+                color: #2d3748;
+                font-size: 15px;
+            }
+            
+            .form-row > span {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                align-items: center;
+            }
+            
+            label {
+                min-width: 70px;
+                font-size: 13px;
+            }
+            
+            input[type="text"], 
+            input[type="number"], 
+            input[type="tel"],
+            input[type="date"],
+            select {
+                flex: 1;
+                min-width: 140px;
+                padding: 14px 16px;
+                font-size: 16px; /* 防止iOS缩放 */
+                border-radius: 8px;
+            }
+            
+            textarea {
+                font-size: 16px; /* 防止iOS缩放 */
+                padding: 14px 16px;
+                border-radius: 8px;
+            }
+            
+            button {
+                width: 100%;
+                max-width: 280px;
+                margin: 8px 0;
+                padding: 16px 20px;
+                font-size: 15px;
+                border-radius: 10px;
+            }
+            
+            .section[style*="text-align: center"] {
+                padding: 24px 20px;
+                gap: 12px;
+                flex-direction: column;
+                align-items: center;
             }
             
             .form-row > span {
@@ -250,80 +392,155 @@
           /* 触摸友好的按钮和选择器 */
         button {
             transition: background-color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        button:hover::before {
+            left: 100%;
         }
         
         button:hover {
-            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
         
         button:active {
-            transform: translateY(1px);
+            transform: translateY(0px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
-        @media (hover: none) and (pointer: coarse) {
-            select, 
-            input[type="text"], 
-            input[type="number"], 
-            input[type="tel"] {
-                min-height: 44px; /* iOS建议的最小触摸目标 */
-            }
-            
-            button {
-                min-height: 44px;
-                padding: 12px 20px;
-                margin: 5px;
-                width: auto;
-                min-width: 100px;
-            }
+        /* 不同类型按钮的配色 */
+        button[onclick*="saveForm"] {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
         }
         
-        /* 移动端按钮布局 */
-        @media (max-width: 480px) {
-            .section[style*="text-align: center"] {
-                text-align: center;
-            }
-            
-            .section button {
-                display: inline-block;
-                width: 45%;
-                margin: 5px 1%;
-                padding: 10px 6px;
-                font-size: 12px;
-            }
+        button[onclick*="clearForm"] {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+        }
+        
+        button[onclick*="loadTemplate"] {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+        
+        button[onclick*="exportToPDF"] {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+        
+        button[onclick*="exportToWord"] {
+            background: linear-gradient(135deg, #2980b9 0%, #1f4e79 100%);
+            color: white;
+        }
+        
+        button[onclick*="restoreForm"] {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+        }
+        
+        /* 操作按钮区域样式 */
+        .section[style*="text-align: center"] {
+            background: rgba(255, 255, 255, 0.98);
+            border: none;
+            padding: 32px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .section[style*="text-align: center"]::before {
+            display: none;
         }
         
         /* 打印样式 */
         @media print {
             body {
-                background-color: white;
-                padding: 0;
+                background: white !important;
+                padding: 20px;
                 font-size: 12px;
+                color: black;
+            }
+            
+            body::before {
+                display: none;
             }
             
             .section {
-                box-shadow: none;
-                border: 1px solid #000;
-                margin-bottom: 10px;
+                background: white !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc;
+                margin-bottom: 15px;
                 page-break-inside: avoid;
+                backdrop-filter: none;
+            }
+            
+            .section::before {
+                display: none;
             }
             
             .section:last-child {
                 display: none; /* 隐藏操作按钮 */
             }
             
-            h1, .section h2 {
-                color: black;
-                border-bottom: 1px solid #000;
+            h1 {
+                color: black !important;
+                text-shadow: none !important;
+                font-size: 24px;
+            }
+            
+            .section h2 {
+                color: black !important;
+                border-bottom: 2px solid black;
+                font-size: 16px;
+            }
+            
+            .section h2::before {
+                background: black !important;
             }
             
             input, select, textarea {
-                border: none;
-                border-bottom: 1px solid #000;
-                background: transparent;
+                border: none !important;
+                border-bottom: 1px solid black !important;
+                background: transparent !important;
+                box-shadow: none !important;
                 print-color-adjust: exact;
+                color: black !important;
             }
             
             .hidden {
+                display: none !important;
+            }
+            
+            button {
                 display: none !important;
             }
         }
@@ -353,6 +570,30 @@
                 display: block !important;
                 width: 100% !important;
                 box-sizing: border-box;
+            }
+            
+            /* 移动端详情展示区域样式优化 - 不强制隐藏，让JavaScript控制显示 */
+            span[id$="-detail"]:not(.hidden),
+            span[id$="-info"]:not(.hidden),
+            span[id$="-history"]:not(.hidden),
+            span[id$="-area"]:not(.hidden),
+            span[id$="-exposure"]:not(.hidden),
+            span[id$="-dependence"]:not(.hidden),
+            span[id$="-abuse"]:not(.hidden),
+            span[id$="-abortion"]:not(.hidden),
+            span[id$="-health"]:not(.hidden),
+            span[id$="-test"]:not(.hidden),
+            span[id$="-plan"]:not(.hidden),
+            span[id*="relief-"]:not(.hidden),
+            span[id*="options"]:not(.hidden) {
+                display: block !important;
+                width: 100%;
+                margin-top: 8px;
+                padding: 12px;
+                background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+                border-radius: 8px;
+                border-left: 3px solid #667eea;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             }
         }
     </style>    <script>
@@ -2636,12 +2877,12 @@
 
     <!-- 操作按钮 -->
     <div class="section" style="text-align: center;">
-        <button type="button" onclick="saveForm()" style="background-color: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">💾 保存到本地</button>
-        <button type="button" onclick="clearForm()" style="background-color: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">🗑️ 清空表单</button>
-        <button type="button" onclick="loadTemplate()" style="background-color: #f39c12; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📋 加载模板</button>
-        <button type="button" onclick="exportToPDF()" style="background-color: #e74c3c; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📄 打印/PDF</button>
-        <button type="button" onclick="exportToWord()" style="background-color: #2980b9; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📝 导出Word</button>
-        <button type="button" onclick="restoreForm()" style="background-color: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">🔄 恢复数据</button>
+        <button type="button" onclick="saveForm()">💾 保存到本地</button>
+        <button type="button" onclick="clearForm()">🗑️ 清空表单</button>
+        <button type="button" onclick="loadTemplate()">📋 加载模板</button>
+        <button type="button" onclick="exportToPDF()">📄 打印/PDF</button>
+        <button type="button" onclick="exportToWord()">📝 导出Word</button>
+        <button type="button" onclick="restoreForm()">🔄 恢复数据</button>
     </div>
 </body>
 </html>
