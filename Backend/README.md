@@ -1,141 +1,104 @@
-# web-consultation-assistant - 完整集成系统
+# 🏥 Web Consultation Assistant
 
-一个完整的web-consultation-assistant全栈系统，实现了前端表单与后端数据库的无缝集成，支持统一导航和双重数据保存。
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0-brightgreen)](https://nodejs.org/)
+[![MySQL Version](https://img.shields.io/badge/mysql-%3E%3D8.0-blue)](https://mysql.com/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-## ✨ 系统特性
+一个完整的医疗问诊助手全栈系统，实现了前端表单与后端数据库的无缝集成，支持统一导航和双重数据保存。
 
-- 🏥 **患者管理**: 完整的患者基本信息管理
-- 📋 **问诊记录**: 现病史、系统回顾、体格检查记录
-- 🔍 **数据查询**: 患者信息搜索和检索
-- 🌐 **RESTful API**: 标准化的API接口设计
-- 💾 **双重存储**: 本地localStorage + 云端MySQL数据库
-- 🧭 **统一导航**: 所有页面配备响应式导航栏
-- ☁️ **云端部署**: 支持容器化云服务器部署
+## ✨ 核心特性
 
-## 🚀 访问入口
+- 🏥 **患者管理** - 完整的患者基本信息管理
+- 📋 **问诊记录** - 现病史、系统回顾、体格检查记录
+- 🔍 **数据查询** - 患者信息搜索和检索
+- 🌐 **RESTful API** - 标准化的API接口设计
+- 💾 **双重存储** - 本地localStorage + 云端MySQL数据库
+- 🧭 **统一导航** - 所有页面配备响应式导航栏
+- ☁️ **云端部署** - 支持容器化云服务器部署
+- 🔐 **安全防护** - SQL注入防护、参数验证、错误处理
 
-| 页面 | 地址 | 功能描述 |
-|------|------|----------|
-| **主页导航** | <http://localhost:3001/> | 系统总览和快速导航 |
-| **完整问诊表单** | <http://localhost:3001/web> | 专业问诊记录系统 |
-| **API演示页面** | <http://localhost:3001/demo> | 完整的API测试界面 |
-| **集成测试** | <http://localhost:3001/test> | 系统功能验证 |
+## 🚀 快速开始
 
-## 🛠 技术栈
-
-- **后端框架**: Node.js + Express.js
-- **数据库**: MySQL 8.0+
-- **前端技术**: HTML5 + CSS3 + JavaScript ES6
-- **数据连接**: mysql2/promise 连接池
-- **中间件**: CORS, Body-parser
-- **环境管理**: dotenv
-- **开发工具**: nodemon
-
-## ⚡ 快速开始
-
-### 环境要求
+### 📋 环境要求
 
 - Node.js 16.0+
 - MySQL 8.0+
-- npm 或 yarn
+- npm 6.0+ 或 yarn 1.0+
 
-### 安装步骤
+### ⚡ 一键启动
 
-1. **克隆项目**
-   ```bash
-   git clone <repository-url>
-   cd web-consultation-assistant/Backend
-   ```
+```bash
+# 1. 克隆项目
+git clone https://github.com/your-username/web-consultation-assistant.git
+cd web-consultation-assistant/Backend
 
-2. **安装依赖**
-   ```bash
-   npm install
-   ```
+# 2. 安装依赖
+npm install
 
-3. **配置环境变量**
-   
-   复制 `.env` 文件并修改数据库配置：
-   ```bash
-   cp .env.example .env
-   ```
-   
-   编辑 `.env` 文件：
-   ```env
-   DB_HOST=localhost
-   DB_USER=root
-   DB_PASSWORD=your_password
-   DB_NAME=medical_consultation
-   DB_PORT=3306
-   PORT=3000
-   ```
+# 3. 配置环境变量
+cp .env.example .env
+# 编辑 .env 文件，配置数据库连接信息
 
-4. **初始化数据库**
-   
-   在MySQL中运行初始化脚本：
-   ```bash
-   mysql -u root -p < database/init.sql
-   ```
+# 4. 初始化数据库
+mysql -u root -p < database/init.sql
 
-5. **启动服务器**
-   ```bash
-   # 开发模式
-   npm run dev
-   
-   # 生产模式
-   npm start
-   ```
+# 5. 启动服务器
+npm run dev
+```
 
-6. **验证服务**
-   
-   访问 http://localhost:3001 查看主页导航
-   
-   - 主页导航: http://localhost:3001
-   - 完整问诊表单: http://localhost:3001/web  
-   - API演示页面: http://localhost:3001/demo
-   - 健康检查: http://localhost:3001/api/health
+### 📱 访问应用
 
-## 页面说明
+| 页面 | 地址 | 功能描述 |
+|------|------|----------|
+| **主页导航** | <http://localhost:3001> | 系统总览和快速导航 |
+| **问诊表单** | <http://localhost:3001/web> | 专业问诊记录系统 |
+| **API演示** | <http://localhost:3001/demo> | 完整的API测试界面 |
+| **系统测试** | <http://localhost:3001/test> | 功能验证页面 |
 
-### 🏠 主页导航 (/)
-主页提供了系统的整体概览和快速导航功能：
-- 显示系统运行状态
-- 提供两个主要功能入口
-- API接口信息展示
+## 🛠 技术架构
 
-### 📋 完整问诊表单 (/web)
-专业的医疗问诊记录系统：
-- 完整的患者信息采集
-- 病史记录和系统回顾
-- 多种导出格式（Word、Excel、PDF等）
-- 本地存储和云端同步
-- 打印友好界面
+### 后端技术栈
+- **运行环境**: Node.js 20+
+- **Web框架**: Express.js
+- **数据库**: MySQL 8.0+
+- **连接池**: mysql2/promise
+- **中间件**: CORS, Body-parser, dotenv
+- **开发工具**: nodemon
 
-### 🧪 API演示页面 (/demo)  
-用于测试和演示后端API功能：
-- 简化的数据输入界面
-- 实时API连接状态
-- 数据库操作测试
-- 错误调试信息
+### 前端技术栈
+- **标准技术**: HTML5 + CSS3 + JavaScript ES6
+- **设计风格**: 响应式医疗主题UI
+- **数据交互**: 原生 Fetch API
+- **本地存储**: localStorage
+- **导航系统**: 统一响应式导航栏
 
-## API文档
+## � API 文档
 
 ### 基础信息
-
 - **Base URL**: `http://localhost:3001/api`
 - **Content-Type**: `application/json`
+- **响应格式**: JSON
 
-### 接口列表
+### 核心接口
 
-#### 健康检查
+#### 🔍 健康检查
+```http
+GET /api/health
 ```
-GET /health
+**响应示例**:
+```json
+{
+  "status": "OK",
+  "message": "服务器运行正常",
+  "timestamp": "2025-07-01T15:28:34.926Z"
+}
 ```
 
-#### 患者管理
+#### 👤 患者管理
 
 **创建患者**
-```
-POST /patient
+```http
+POST /api/patients
 Content-Type: application/json
 
 {
@@ -147,272 +110,137 @@ Content-Type: application/json
 }
 ```
 
-**获取患者信息**
-```
-GET /patient/:id
-```
-
 **获取患者列表**
-```
-GET /patients?page=1&limit=20
+```http
+GET /api/patients?page=1&limit=20
 ```
 
 **搜索患者**
-```
-GET /patients/search?q=关键词
-```
-
-**更新患者**
-```
-PUT /patient/:id
+```http
+GET /api/patients/search?q=张三
 ```
 
-**删除患者**
-```
-DELETE /patient/:id
-```
-
-#### 医疗记录
+#### 📋 医疗记录
 
 **保存现病史**
-```
-POST /patient/:id/current-illness
+```http
+POST /api/patients/:id/current-illness
 ```
 
 **保存系统回顾**
-```
-POST /patient/:id/system-review
-```
-
-**保存体格检查**
-```
-POST /patient/:id/physical-exam
+```http
+POST /api/patients/:id/system-review
 ```
 
-## 数据库结构
+## 🗃 数据库结构
 
-### 主要数据表
-
-- `patients` - 患者基本信息
-- `current_illness` - 现病史
-- `past_history` - 既往史
-- `personal_history` - 个人史
-- `family_history` - 家族史
-- `marriage_birth_history` - 婚姻生育史
-- `system_review` - 系统回顾
-- `physical_examination` - 体格检查
-- `auxiliary_examination` - 辅助检查
-- `diagnosis` - 诊断
-- `treatment_plan` - 治疗方案
-
-## 前端集成
-
-### 引入API文件
-
-在HTML中引入前端API集成文件：
-
-```html
-<script src="/js/medical-api.js"></script>
+```sql
+-- 主要数据表
+patients              -- 患者基本信息
+current_illness      -- 现病史
+past_history         -- 既往史
+system_review        -- 系统回顾
+physical_examination -- 体格检查
+diagnosis           -- 诊断
+treatment_plan      -- 治疗方案
 ```
 
-### 使用示例
+## 🔧 环境配置
 
-```javascript
-// 保存完整问诊记录
-formHandler.saveCompleteRecord();
+### 环境变量 (.env)
+```env
+# 数据库配置
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=medical_consultation
+DB_PORT=3306
 
-// 获取患者信息
-const patient = await medicalAPI.getPatient(patientId);
-
-// 搜索患者
-const results = await medicalAPI.searchPatients('张三');
+# 服务器配置
+PORT=3001
+NODE_ENV=development
 ```
 
-## 部署
-
-### 本地部署
-
-1. 确保MySQL服务运行
-2. 配置正确的数据库连接信息
-3. 运行 `npm start` 启动服务
-
-### 云端部署
-
-#### 阿里云ECS部署
-
-1. **购买ECS实例**并安装Node.js和MySQL
-
-2. **上传代码**
-   ```bash
-   scp -r . user@your-server:/path/to/app
-   ```
-
-3. **安装依赖**
-   ```bash
-   npm install --production
-   ```
-
-4. **配置环境变量**
-   ```bash
-   export DB_HOST=your-rds-host
-   export DB_PASSWORD=your-db-password
-   ```
-
-5. **使用PM2管理进程**
-   ```bash
-   npm install -g pm2
-   pm2 start server.js --name medical-api
-   pm2 startup
-   pm2 save
-   ```
-
-#### Docker部署
-
-```dockerfile
-FROM node:16-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install --production
-COPY . .
-EXPOSE 3000
-CMD ["npm", "start"]
-```
-
+### MySQL 数据库设置
 ```bash
-docker build -t web-consultation-assistant-api .
-docker run -d -p 3000:3000 --name web-api web-consultation-assistant-api
+# 1. 创建数据库
+mysql -u root -p -e "CREATE DATABASE medical_consultation;"
+
+# 2. 导入表结构
+mysql -u root -p medical_consultation < database/init.sql
 ```
 
-## 开发指南
+## 🚀 部署指南
 
-### 项目结构
-
-```
-├── server.js           # 主服务器文件
-├── package.json        # 项目配置
-├── .env               # 环境变量
-├── database/
-│   └── init.sql       # 数据库初始化脚本
-├── models/
-│   └── Patient.js     # 患者数据模型
-├── routes/
-│   └── api.js         # API路由
-├── utils/
-│   └── database.js    # 数据库工具类
-└── public/
-    └── js/
-        └── medical-api.js  # 前端API集成
-```
-
-### 添加新功能
-
-1. 在 `models/` 中创建数据模型
-2. 在 `routes/` 中添加路由处理
-3. 更新数据库结构（如需要）
-4. 编写测试用例
-
-### 代码规范
-
-- 使用 ES6+ 语法
-- 采用 async/await 处理异步操作
-- 遵循 RESTful API 设计原则
-- 添加适当的错误处理和日志
-
-## 安全性
-
-### 数据保护
-
-- 使用参数化查询防止SQL注入
-- 实施CORS策略
-- 敏感信息环境变量化
-- 建议添加JWT认证（生产环境）
-
-### 建议增强
-
-```javascript
-// JWT认证中间件
-const jwt = require('jsonwebtoken');
-
-function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-    
-    if (!token) {
-        return res.sendStatus(401);
-    }
-    
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.sendStatus(403);
-        req.user = user;
-        next();
-    });
-}
-```
-
-## 监控和日志
-
-### 推荐工具
-
-- **日志**: Winston
-- **监控**: PM2 + Keymetrics
-- **性能**: New Relic
-- **错误追踪**: Sentry
-
-## 备份和恢复
-
-### 数据库备份
-
+### Docker 部署 (推荐)
 ```bash
-# 备份
-mysqldump -u root -p medical_consultation > backup.sql
-
-# 恢复
-mysql -u root -p medical_consultation < backup.sql
+# 构建并运行
+docker build -t web-consultation-assistant .
+docker run -d -p 3001:3001 --name medical-api web-consultation-assistant
 ```
 
-### 自动备份脚本
-
+### PM2 部署
 ```bash
-#!/bin/bash
-DATE=$(date +%Y%m%d_%H%M%S)
-mysqldump -u root -p$DB_PASSWORD medical_consultation > /backup/medical_${DATE}.sql
+# 安装PM2并启动
+npm install -g pm2
+pm2 start server.js --name "medical-api"
+pm2 startup && pm2 save
 ```
 
-## 故障排除
+## 📂 项目结构
+
+```
+Backend/
+├── server.js              # 主服务器入口
+├── package.json           # 项目配置
+├── .env                   # 环境变量
+├── database/init.sql      # 数据库初始化
+├── routes/api.js          # API路由
+├── models/Patient.js      # 数据模型
+├── utils/database.js      # 数据库工具
+└── public/                # 静态文件
+    ├── home.html         # 主页
+    ├── web.html          # 问诊表单
+    ├── index.html        # API演示
+    └── test.html         # 功能测试
+```
+
+## 🔐 安全特性
+
+- ✅ **SQL注入防护** - 参数化查询
+- ✅ **CORS配置** - 跨域安全控制
+- ✅ **输入验证** - 数据格式校验
+- ✅ **错误处理** - 避免信息泄露
+
+## 🚨 故障排除
 
 ### 常见问题
 
-1. **数据库连接失败**
-   - 检查MySQL服务状态
-   - 验证连接配置
-   - 确认网络连接
+**数据库连接失败**
+```bash
+# 检查MySQL服务
+sudo systemctl status mysql
+# 测试连接
+mysql -u root -p -e "SELECT 1;"
+```
 
-2. **API请求超时**
-   - 检查服务器负载
-   - 优化数据库查询
-   - 调整连接池配置
+**端口被占用**
+```bash
+# 查找进程
+netstat -tulpn | grep :3001
+# 终止进程
+kill -9 <PID>
+```
 
-3. **内存泄漏**
-   - 使用 `clinic` 工具分析
-   - 检查数据库连接释放
-   - 监控事件监听器
+## 📄 许可证
 
-## 许可证
+本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+## 💬 支持与联系
 
-## 贡献
-
-欢迎提交Pull Request和Issue！
-
-## 支持
-
-如有问题，请通过以下方式联系：
-
-- 📧 Email: support@web-consultation-assistant.com
-- 📞 Phone: +86-xxx-xxxx-xxxx
-- 💬 WeChat: medical-support
+- � Bug报告: [GitHub Issues](https://github.com/your-username/web-consultation-assistant/issues)
+- � 功能建议: [GitHub Discussions](https://github.com/your-username/web-consultation-assistant/discussions)
 
 ---
 
-**注意**: 本系统仅供学习和演示使用，实际医疗应用需要符合相关法规和标准。
+**⚠️ 免责声明**: 本系统仅供学习和演示使用，实际医疗应用需要符合相关法规和医疗标准。
