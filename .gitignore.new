@@ -1,0 +1,149 @@
+# ===========================================
+# Web Consultation Assistant - .gitignore
+# 适用于GitHub公开项目
+# ===========================================
+
+# ============= 项目结构说明 =============
+# 本项目只上传以下内容到GitHub：
+# - index.html (项目入口)
+# - README.md (项目说明)
+# - Backend/ (服务器端代码)
+# - .gitignore (本文件)
+# 
+# 排除所有Visual Studio和本机相关文件
+
+# ============= Visual Studio 相关文件 =============
+*.sln
+*.pyproj
+*.pyproj.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+obj/
+bin/
+.vs/
+*.userprefs
+mono_crash.*
+
+# 构建结果
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options directory
+Generated\ Files/
+
+# 测试结果
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.VisualState.xml
+TestResult.xml
+
+# ============= Backend Node.js 相关 =============
+# 依赖包
+Backend/node_modules/
+Backend/npm-debug.log*
+Backend/yarn-debug.log*
+Backend/yarn-error.log*
+Backend/package-lock.json
+Backend/yarn.lock
+
+# 环境配置文件（包含敏感信息）
+Backend/.env
+Backend/.env.local
+Backend/.env.development
+Backend/.env.production
+
+# 日志文件
+Backend/logs/
+Backend/*.log
+Backend/log/
+
+# 运行时文件
+Backend/pids/
+Backend/*.pid
+Backend/*.seed
+Backend/*.pid.lock
+
+# 覆盖率和测试报告
+Backend/coverage/
+Backend/.nyc_output
+Backend/test-results/
+
+# 构建输出
+Backend/dist/
+Backend/build/
+
+# 缓存
+Backend/.npm
+Backend/.eslintcache
+
+# PM2 相关
+Backend/ecosystem.config.js
+
+# 上传文件
+Backend/uploads/
+Backend/public/uploads/
+
+# 数据库文件
+Backend/*.db
+Backend/*.sqlite
+Backend/*.sqlite3
+
+# SSL证书
+Backend/*.pem
+Backend/*.key
+Backend/*.crt
+
+# 本地配置
+Backend/config/local.js
+Backend/config/development.js
+Backend/config/production.js
+
+# ============= 操作系统文件 =============
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ============= 编辑器和IDE =============
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ============= 临时文件 =============
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# ============= 压缩和备份文件 =============
+*.zip
+*.rar
+*.7z
+*.tar.gz
+*.bak
+*.backup
+*.orig
+
+# ============= 其他 =============
+*.log
