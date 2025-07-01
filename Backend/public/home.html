@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医疗问诊助手 - 主页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 导航存在时调整页面布局 */
+        body.has-nav {
+            padding-top: 60px;
+            align-items: flex-start;
+            padding-top: 80px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #d4edda;
+            color: #155724;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 2px solid #c3e6cb;
+            font-weight: bold;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+        }
+
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            border-color: #667eea;
+        }
+
+        .option-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .option-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .option-description {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
+
+        .option-features {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .option-features li {
+            color: #34495e;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .option-features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+        }
+
+        .api-info {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .api-info h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .api-endpoint {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 5px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .footer {
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            .option-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 医疗问诊助手</h1>
+            <p class="subtitle">专业的医疗问诊记录系统</p>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span id="status-text">系统运行正常</span>
+            </div>
+        </div>
+
+        <div class="options">
+            <!-- 完整问诊表单 -->
+            <div class="option-card" onclick="window.open('/web', '_blank')">
+                <span class="option-icon">📋</span>
+                <h3 class="option-title">完整问诊表单</h3>
+                <p class="option-description">专业的医疗问诊记录表单，支持完整的病史采集和多种导出格式</p>
+                <ul class="option-features">
+                    <li>完整的病史采集</li>
+                    <li>系统回顾和体格检查</li>
+                    <li>多种导出格式支持</li>
+                    <li>本地数据存储</li>
+                    <li>云端数据同步</li>
+                    <li>打印友好界面</li>
+                </ul>
+                <a href="/web" class="btn" target="_blank">🚀 使用完整表单</a>
+            </div>
+
+            <!-- 演示版本 -->
+            <div class="option-card" onclick="window.open('/', '_blank')">
+                <span class="option-icon">🧪</span>
+                <h3 class="option-title">演示版本</h3>
+                <p class="option-description">简化的演示界面，用于测试后端API功能和数据库连接</p>
+                <ul class="option-features">
+                    <li>简化的表单界面</li>
+                    <li>API连接测试</li>
+                    <li>数据库操作演示</li>
+                    <li>实时状态监控</li>
+                    <li>错误调试信息</li>
+                </ul>
+                <a href="/" class="btn secondary" target="_blank">🔧 查看演示</a>
+            </div>
+        </div>
+
+        <!-- API信息 -->
+        <div class="api-info">
+            <h3>🔗 API 接口信息</h3>
+            <div class="api-endpoint">GET /api/health - 健康检查</div>
+            <div class="api-endpoint">POST /api/patient - 创建患者</div>
+            <div class="api-endpoint">GET /api/patients - 获取患者列表</div>
+            <div class="api-endpoint">GET /api/patient/:id - 获取患者详情</div>
+            <div class="api-endpoint">POST /api/patient/:id/current-illness - 保存现病史</div>
+            <div class="api-endpoint">POST /api/patient/:id/system-review - 保存系统回顾</div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 医疗问诊助手 | 基于 Node.js + MySQL 构建</p>
+            <p>支持本地部署和云端服务器部署</p>
+        </div>
+    </div>
+
+    <script>
+        // 检查API状态
+        async function checkAPIStatus() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('status-text').textContent = '✅ 服务器运行正常';
+                    console.log('API Health Check:', data);
+                } else {
+                    throw new Error('API响应异常');
+                }
+            } catch (error) {
+                document.getElementById('status-text').textContent = '❌ 服务器连接失败';
+                console.error('API Health Check Failed:', error);
+                
+                // 更新状态指示器样式
+                const statusIndicator = document.querySelector('.status-indicator');
+                statusIndicator.style.background = '#f8d7da';
+                statusIndicator.style.color = '#721c24';
+                statusIndicator.style.borderColor = '#f5c6cb';
+                
+                const statusDot = document.querySelector('.status-dot');
+                statusDot.style.background = '#dc3545';
+            }
+        }
+
+        // 页面加载时检查状态
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAPIStatus();
+            
+            // 每30秒检查一次状态
+            setInterval(checkAPIStatus, 30000);
+        });
+
+        // 添加键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === '1') {
+                window.open('/web', '_blank');
+            } else if (e.key === '2') {
+                window.open('/', '_blank');
+            }
+        });
+    </script>
+
+    <!-- 引入导航组件 -->
+    <script src="/js/navigation.js"></script>
+</body>
+</html>

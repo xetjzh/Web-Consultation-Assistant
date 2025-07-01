@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医疗问诊助手 - 演示页面</title>
+    <link rel="stylesheet" href="/css/navigation.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        body.has-nav {
+            padding-top: 70px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            background: white;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-panel {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-ok {
+            border-color: #28a745;
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-error {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ccc;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.online {
+            background-color: #28a745;
+        }
+
+        .status-indicator.offline {
+            background-color: #dc3545;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .demo-section {
+            border: 2px dashed #667eea;
+            background: #f8f9ff;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .form-group {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="has-nav">
+    <div id="navigation"></div>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 医疗问诊助手</h1>
+            <p>后端数据库集成演示系统</p>
+        </div>
+
+        <!-- API状态检查 -->
+        <div class="section">
+            <h2>🔗 系统状态</h2>
+            <div class="status-panel" id="api-status">
+                <div class="api-status">
+                    <div class="status-indicator" id="status-indicator"></div>
+                    <span id="status-text">正在检查服务器连接...</span>
+                </div>
+            </div>
+            <button class="btn" onclick="checkServerStatus()">重新检查连接</button>
+        </div>
+
+        <!-- 使用说明 -->
+        <div class="section demo-section">
+            <h2>📋 使用说明</h2>
+            <div class="instructions">
+                <strong>演示步骤：</strong>
+                <ol>
+                    <li>确保后端服务器运行正常（绿色指示灯）</li>
+                    <li>填写患者基本信息</li>
+                    <li>填写症状详情（现病史）</li>
+                    <li>完成系统回顾</li>
+                    <li>点击"保存到数据库"测试功能</li>
+                </ol>
+                <p><strong>注意：</strong> 需要先配置MySQL数据库连接才能完整测试数据存储功能。</p>
+            </div>
+        </div>
+
+        <!-- 患者基本信息 -->
+        <div class="section">
+            <h2>👤 患者基本信息</h2>
+            <form id="patient-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="patient-name">姓名 *</label>
+                        <input type="text" id="patient-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patient-age">年龄 *</label>
+                        <input type="number" id="patient-age" name="age" min="0" max="150" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patient-gender">性别 *</label>
+                        <select id="patient-gender" name="gender" required>
+                            <option value="">请选择</option>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">联系电话</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="medical-record-number">病历号</label>
+                        <input type="text" id="medical-record-number" name="medicalRecordNumber">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="chief-complaint">主诉 *</label>
+                        <textarea id="chief-complaint" name="chiefComplaint" placeholder="请详细描述主要症状..." required></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- 现病史 -->
+        <div class="section">
+            <h2>📝 现病史</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="symptom-details">症状详情</label>
+                    <textarea id="symptom-details" placeholder="详细描述症状的发生、发展过程..."></textarea>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="duration">持续时间</label>
+                    <input type="text" id="duration" placeholder="如：3天、1周等">
+                </div>
+                <div class="form-group">
+                    <label for="severity">严重程度</label>
+                    <select id="severity">
+                        <option value="">请选择</option>
+                        <option value="轻度">轻度</option>
+                        <option value="中度">中度</option>
+                        <option value="重度">重度</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 系统回顾（简化版） -->
+        <div class="section">
+            <h2>🔍 系统回顾</h2>
+            <div class="form-row">
+                <strong>神经系统症状：</strong>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>头痛</label>
+                    <select data-system="nervous" data-symptom="headache">
+                        <option value="无">无</option>
+                        <option value="有">有</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>头晕</label>
+                    <select data-system="nervous" data-symptom="dizziness">
+                        <option value="无">无</option>
+                        <option value="有">有</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>失眠</label>
+                    <select data-system="nervous" data-symptom="insomnia">
+                        <option value="无">无</option>
+                        <option value="有">有</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="section">
+            <h2>💾 数据操作</h2>
+            <div style="text-align: center;">
+                <button class="btn" onclick="savePatientData()" id="save-btn">
+                    保存到数据库
+                </button>
+                <button class="btn" onclick="loadSampleData()">
+                    加载示例数据
+                </button>
+                <button class="btn" onclick="clearForm()">
+                    清空表单
+                </button>
+            </div>
+        </div>
+
+        <!-- 测试结果显示 -->
+        <div class="section">
+            <h2>📊 测试结果</h2>
+            <div id="test-results" class="status-panel">
+                <p>等待操作...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入API集成文件 -->
+    <script src="/js/medical-api.js"></script>
+    
+    <script>
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkServerStatus();
+            loadSampleData();
+        });
+
+        // 检查服务器状态
+        async function checkServerStatus() {
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            const statusPanel = document.getElementById('api-status');
+
+            try {
+                // 更新API基础URL
+                medicalAPI.baseURL = 'http://localhost:3001/api';
+                
+                const response = await medicalAPI.healthCheck();
+                
+                statusIndicator.classList.add('online');
+                statusIndicator.classList.remove('offline');
+                statusText.textContent = `服务器连接正常 - ${response.message}`;
+                statusPanel.classList.add('status-ok');
+                statusPanel.classList.remove('status-error');
+                
+            } catch (error) {
+                statusIndicator.classList.add('offline');
+                statusIndicator.classList.remove('online');
+                statusText.textContent = `服务器连接失败: ${error.message}`;
+                statusPanel.classList.add('status-error');
+                statusPanel.classList.remove('status-ok');
+            }
+        }
+
+        // 加载示例数据
+        function loadSampleData() {
+            document.getElementById('patient-name').value = '张三';
+            document.getElementById('patient-age').value = '35';
+            document.getElementById('patient-gender').value = '男';
+            document.getElementById('phone').value = '13800138001';
+            document.getElementById('medical-record-number').value = 'MR2024001';
+            document.getElementById('chief-complaint').value = '头痛3天，伴有恶心呕吐';
+            document.getElementById('symptom-details').value = '患者3天前无明显诱因出现头痛，呈持续性胀痛，伴有恶心呕吐，休息后稍有缓解';
+            document.getElementById('duration').value = '3天';
+            document.getElementById('severity').value = '中度';
+            
+            showResult('示例数据已加载', 'info');
+        }
+
+        // 保存患者数据
+        async function savePatientData() {
+            const saveBtn = document.getElementById('save-btn');
+            saveBtn.disabled = true;
+            saveBtn.textContent = '保存中...';
+
+            try {
+                // 收集基本信息
+                const basicInfo = {
+                    name: document.getElementById('patient-name').value,
+                    age: parseInt(document.getElementById('patient-age').value),
+                    gender: document.getElementById('patient-gender').value,
+                    phone: document.getElementById('phone').value,
+                    medicalRecordNumber: document.getElementById('medical-record-number').value,
+                    chiefComplaint: document.getElementById('chief-complaint').value
+                };
+
+                // 验证必填字段
+                if (!basicInfo.name || !basicInfo.age || !basicInfo.gender || !basicInfo.chiefComplaint) {
+                    throw new Error('请填写所有必填字段（姓名、年龄、性别、主诉）');
+                }
+
+                showResult('正在保存患者基本信息...', 'info');
+
+                // 保存患者基本信息
+                const patientResponse = await medicalAPI.savePatientBasicInfo(basicInfo);
+                const patientId = patientResponse.patientId;
+
+                showResult(`患者信息保存成功，患者ID: ${patientId}`, 'success');
+
+                // 如果有现病史信息，也保存
+                const illnessData = {
+                    symptomDetails: document.getElementById('symptom-details').value,
+                    duration: document.getElementById('duration').value,
+                    severity: document.getElementById('severity').value
+                };
+
+                if (illnessData.symptomDetails) {
+                    await medicalAPI.saveCurrentIllness(patientId, illnessData);
+                    showResult('现病史保存成功', 'success');
+                }
+
+                // 保存系统回顾
+                const systemReview = formHandler.collectSystemReview();
+                await medicalAPI.saveSystemReview(patientId, systemReview);
+                showResult('系统回顾保存成功', 'success');
+
+                showResult('✅ 所有数据保存完成！', 'success');
+
+            } catch (error) {
+                console.error('保存数据错误:', error);
+                showResult(`❌ 保存失败: ${error.message}`, 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '保存到数据库';
+            }
+        }
+
+        // 清空表单
+        function clearForm() {
+            document.getElementById('patient-form').reset();
+            document.getElementById('symptom-details').value = '';
+            document.getElementById('duration').value = '';
+            document.getElementById('severity').value = '';
+            
+            const systemSelects = document.querySelectorAll('[data-system]');
+            systemSelects.forEach(select => {
+                select.value = '无';
+            });
+            
+            showResult('表单已清空', 'info');
+        }
+
+        // 显示测试结果
+        function showResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('test-results');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const colors = {
+                success: '#d4edda',
+                error: '#f8d7da',
+                warning: '#fff3cd',
+                info: '#d1ecf1'
+            };
+
+            resultsDiv.style.backgroundColor = colors[type];
+            resultsDiv.innerHTML = `
+                <p><strong>[${timestamp}]</strong> ${message}</p>
+            `;
+        }
+    </script>
+    <script src="/js/navigation.js"></script>
+</body>
+</html>

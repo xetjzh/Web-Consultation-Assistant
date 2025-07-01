@@ -59,37 +59,43 @@ Web-Consultation-Assistant/
 ### ⚡ 安装和运行
 
 1. **克隆项目**
+
 ```bash
-git clone <repository-url>
+git clone https://github.com/your-username/Web-Consultation-Assistant.git
 cd Web-Consultation-Assistant
 ```
 
 2. **进入服务器目录**
+
 ```bash
 cd Backend
 ```
 
 3. **安装依赖**
+
 ```bash
 npm install
 ```
 
 4. **配置数据库**
+
 ```bash
 # 创建数据库
 mysql -u root -p < database/init.sql
 ```
 
 5. **启动服务器**
+
 ```bash
 npm run dev
 ```
 
 6. **访问应用**
-- 主页：http://localhost:3001/
-- 问诊表单：http://localhost:3001/web
-- API演示：http://localhost:3001/demo
-- 功能测试：http://localhost:3001/test
+
+- 主页：[http://localhost:3001/](http://localhost:3001/)
+- 问诊表单：[http://localhost:3001/web](http://localhost:3001/web)
+- API演示：[http://localhost:3001/demo](http://localhost:3001/demo)
+- 功能测试：[http://localhost:3001/test](http://localhost:3001/test)
 
 ## 📱 功能模块
 
@@ -206,6 +212,28 @@ npm start
 
 - 项目Issues：[GitHub Issues](../../issues)
 - 邮箱：your-email@example.com
+
+## 🌐 GitHub部署说明
+
+本项目已优化为GitHub公开项目，仅包含以下文件：
+
+- `index.html` - 项目入口文件
+- `README.md` - 项目说明文档
+- `Backend/` - 完整的服务器端代码
+- `.gitignore` - Git忽略规则配置
+
+### 🚫 已排除的文件
+- Visual Studio项目文件（*.sln, *.pyproj等）
+- 本地配置文件和环境变量
+- node_modules和依赖包
+- 日志文件和临时文件
+- 数据库文件和上传文件
+
+### 🔧 首次部署步骤
+1. Fork或克隆本项目
+2. 按照上述"快速开始"指南配置环境
+3. 根据需要修改数据库配置
+4. 部署到您选择的云服务器平台
 
 ---
 
