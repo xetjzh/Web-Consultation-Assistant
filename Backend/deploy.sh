@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# 医疗问诊助手后端部署脚本
+# Web-Consultation-Assistant后端部署脚本
 # 适用于阿里云ECS、腾讯云CVM等Linux服务器
 
-echo "🚀 开始部署医疗问诊助手后端系统..."
+echo "🚀 开始部署Web-Consultation-Assistant后端系统..."
 
 # 检查Node.js环境
 if ! command -v node &> /dev/null; then
@@ -81,7 +81,7 @@ EOF
 mkdir -p logs
 
 # 启动服务
-echo "🚀 启动医疗问诊助手服务..."
+echo "🚀 启动Web-Consultation-Assistant服务..."
 pm2 start ecosystem.config.js
 
 # 设置开机自启

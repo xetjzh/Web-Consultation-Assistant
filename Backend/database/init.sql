@@ -1,4 +1,4 @@
--- 医疗问诊助手数据库初始化脚本
+-- Web-Consultation-Assistant数据库初始化脚本
 
 -- 创建数据库
 CREATE DATABASE IF NOT EXISTS medical_consultation DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_unicode_ci;

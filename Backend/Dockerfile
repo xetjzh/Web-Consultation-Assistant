@@ -1,4 +1,4 @@
-# 医疗问诊助手后端 Docker镜像
+# Web-Consultation-Assistant后端 Docker镜像
 FROM node:16-alpine
 
 # 设置工作目录

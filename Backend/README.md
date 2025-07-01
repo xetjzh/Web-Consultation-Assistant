@@ -1,6 +1,6 @@
-# 医疗问诊助手 - 完整集成系统
+# Web-Consultation-Assistant - 完整集成系统
 
-一个完整的医疗问诊助手全栈系统，实现了前端表单与后端数据库的无缝集成，支持统一导航和双重数据保存。
+一个完整的Web-Consultation-Assistant全栈系统，实现了前端表单与后端数据库的无缝集成，支持统一导航和双重数据保存。
 
 ## ✨ 系统特性
 
@@ -44,7 +44,7 @@
 1. **克隆项目**
    ```bash
    git clone <repository-url>
-   cd 医疗问诊助手/后端
+   cd Web-Consultation-Assistant/Backend
    ```
 
 2. **安装依赖**

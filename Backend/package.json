@@ -1,7 +1,7 @@
 {
   "name": "medical-consultation-backend",
   "version": "1.0.0",
-  "description": "医疗问诊助手后端系统",
+  "description": "Web-Consultation-Assistant后端系统",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

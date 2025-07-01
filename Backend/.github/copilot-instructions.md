@@ -1,9 +1,9 @@
 <!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
 
-# 医疗问诊助手项目 - Copilot 指引
+# Web-Consultation-Assistant项目 - Copilot 指引
 
 ## 项目概述
-这是一个医疗问诊助手全栈项目，包含前端HTML表单和后端Node.js API服务。
+这是一个Web-Consultation-Assistant全栈项目，包含前端HTML表单和后端Node.js API服务。
 
 ## 技术栈
 - **后端**: Node.js + Express.js + MySQL
