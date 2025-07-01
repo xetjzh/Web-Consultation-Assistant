@@ -1943,6 +1943,7 @@
     <!-- 既往史 -->
     <div class="section">
         <h2>既往史</h2>
+        <div class="section-content">
         <div class="form-row">
             <strong>一般健康状况：</strong>
             <label>既往健康状况</label>
@@ -2233,11 +2234,13 @@
                 <textarea rows="2" placeholder="具体接种情况、缺少的疫苗等"></textarea>
             </span>
         </div>
+        </div>
     </div>
 
     <!-- 个人史 -->
     <div class="section">
         <h2>个人史</h2>
+        <div class="section-content">
         <div class="form-row">
             <strong>出生及居住史：</strong>
             <label>出生地</label><input type="text" placeholder="出生省市">
@@ -2435,11 +2438,13 @@
             </select>
             <label>专业</label><input type="text" placeholder="所学专业">
         </div>
+        </div>
     </div>
 
     <!-- 婚姻史 -->
     <div class="section">
         <h2>婚姻史</h2>
+        <div class="section-content">
         <div class="form-row">
             是否结婚
             <select onchange="toggleDisplay('married-info', this.value)">
@@ -2463,11 +2468,13 @@
                 </span>
             </span>
         </div>
+        </div>
     </div>
 
     <!-- 生育史 -->
     <div class="section">
         <h2>生育史</h2>
+        <div class="section-content">
         <div class="form-row">
             <strong>是否有过生育经历：</strong>
             <select onchange="toggleDisplay('fertility-history', this.value, '有')" name="has_fertility_history">
@@ -2626,11 +2633,13 @@
                 </span>
             </div>
         </div>
+        </div>
     </div>
 
     <!-- 月经史（仅女性显示） -->
     <div class="section hidden" id="menstrual-history">
         <h2>月经史</h2>
+        <div class="section-content">
         <div class="form-row">
             <label>初潮年龄</label><input type="number" min="0" placeholder="岁">
             <label>周期</label><input type="text" placeholder="天">
@@ -2660,11 +2669,13 @@
                 <label>绝经年龄</label><input type="number" min="0" placeholder="岁">
             </span>
         </div>
+        </div>
     </div>
 
     <!-- 家族史 -->
     <div class="section">
         <h2>家族史</h2>
+        <div class="section-content">
         <div class="form-row">
             父亲健康状况
             <select onchange="toggleDisplay('father-health', this.value)">
@@ -2712,11 +2723,13 @@
                 <input type="text" placeholder="请描述疾病情况">
             </span>
         </div>
+        </div>
     </div>
 
     <!-- 系统回顾 -->
     <div class="section">
         <h2>系统回顾</h2>
+        <div class="section-content">
         <div class="form-row">
             <strong>一般状况：</strong>
             <label>发热</label>
@@ -2969,11 +2982,13 @@
                 <input type="text" placeholder="麻木部位、程度、诱因等">
             </span>
         </div>
+        </div>
     </div>
 
     <!-- 体格检查 -->
     <div class="section">
         <h2>体格检查</h2>
+        <div class="section-content">
         <div class="form-row">
             <strong>生命体征：</strong>
             <label>体温</label><input type="text" placeholder="°C" name="temperature">
@@ -3476,11 +3491,13 @@
                 <option>Brudzinski征阳性</option>
             </select>
         </div>
+        </div>
     </div>
 
     <!-- 辅助检查 -->
     <div class="section">
         <h2>辅助检查</h2>
+        <div class="section-content">
         <div class="form-row">
             <strong>实验室检查：</strong>
             <label>血常规</label>
@@ -3566,6 +3583,7 @@
         <div class="form-row">
             <strong>其他检查：</strong>
             <textarea rows="2" placeholder="心电图、内镜、病理等其他检查"></textarea>
+        </div>
         </div>
     </div>
 
