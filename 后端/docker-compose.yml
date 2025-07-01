@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # 医疗问诊助手后端API
+  medical-api:
+    build: .
+    container_name: medical-consultation-api
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_HOST=mysql-db
+      - DB_USER=root
+      - DB_PASSWORD=medical123
+      - DB_NAME=medical_consultation
+      - DB_PORT=3306
+      - PORT=3001
+      - NODE_ENV=production
+    depends_on:
+      - mysql-db
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - medical-network
+
+  # MySQL数据库
+  mysql-db:
+    image: mysql:8.0
+    container_name: medical-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=medical123
+      - MYSQL_DATABASE=medical_consultation
+      - MYSQL_USER=medical_user
+      - MYSQL_PASSWORD=medical123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    networks:
+      - medical-network
+
+  # phpMyAdmin (可选的数据库管理界面)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: medical-phpmyadmin
+    environment:
+      - PMA_HOST=mysql-db
+      - PMA_USER=root
+      - PMA_PASSWORD=medical123
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql-db
+    restart: unless-stopped
+    networks:
+      - medical-network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  medical-network:
+    driver: bridge
