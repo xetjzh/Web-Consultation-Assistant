@@ -1,21 +1,22 @@
-# 🏥 Web Consultation Assistant
+# 🏥 Web Consultation Assistant - Backend API
+
+> **📋 这是Web问诊助手的后端服务器文档**  
+> **🔗 完整项目文档请查看根目录的 [README.md](../README.md)**
 
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0-brightgreen)](https://nodejs.org/)
 [![MySQL Version](https://img.shields.io/badge/mysql-%3E%3D8.0-blue)](https://mysql.com/)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Express Version](https://img.shields.io/badge/express-%3E%3D4.18-green)](https://expressjs.com/)
 
-一个完整的医疗问诊助手全栈系统，实现了前端表单与后端数据库的无缝集成，支持统一导航和双重数据保存。
+Web问诊助手的后端API服务器，提供完整的RESTful API接口和静态文件服务。
 
-## ✨ 核心特性
+## 🎯 后端功能概述
 
-- 🏥 **患者管理** - 完整的患者基本信息管理
-- 📋 **问诊记录** - 现病史、系统回顾、体格检查记录
-- 🔍 **数据查询** - 患者信息搜索和检索
-- 🌐 **RESTful API** - 标准化的API接口设计
-- 💾 **双重存储** - 本地localStorage + 云端MySQL数据库
-- 🧭 **统一导航** - 所有页面配备响应式导航栏
-- ☁️ **云端部署** - 支持容器化云服务器部署
-- 🔐 **安全防护** - SQL注入防护、参数验证、错误处理
+- 🏥 **患者数据管理** - 完整的CRUD操作
+- � **数据库集成** - MySQL数据持久化
+- 🌐 **RESTful API** - 标准化接口设计
+- � **静态文件服务** - 前端页面托管
+- 🔐 **数据验证** - 输入参数校验和SQL注入防护
+- 🚀 **容器化部署** - Docker支持
 
 ## 🚀 快速开始
 
@@ -25,12 +26,12 @@
 - MySQL 8.0+
 - npm 6.0+ 或 yarn 1.0+
 
-### ⚡ 一键启动
+### ⚡ 启动步骤
 
 ```bash
-# 1. 克隆项目
-git clone https://github.com/your-username/web-consultation-assistant.git
-cd web-consultation-assistant/Backend
+# 1. 克隆整个项目
+git clone https://github.com/your-username/Web-Consultation-Assistant.git
+cd Web-Consultation-Assistant/Backend
 
 # 2. 安装依赖
 npm install
@@ -42,18 +43,18 @@ cp .env.example .env
 # 4. 初始化数据库
 mysql -u root -p < database/init.sql
 
-# 5. 启动服务器
+# 5. 启动开发服务器
 npm run dev
 ```
 
-### 📱 访问应用
+### 📱 访问地址
 
 | 页面 | 地址 | 功能描述 |
 |------|------|----------|
-| **主页导航** | <http://localhost:3001> | 系统总览和快速导航 |
-| **问诊表单** | <http://localhost:3001/web> | 专业问诊记录系统 |
-| **API演示** | <http://localhost:3001/demo> | 完整的API测试界面 |
-| **系统测试** | <http://localhost:3001/test> | 功能验证页面 |
+| **主页导航** | http://localhost:3001/ | 系统总览和快速导航 |
+| **问诊表单** | http://localhost:3001/web | 专业问诊记录系统 |
+| **API演示** | http://localhost:3001/demo | 完整的API测试界面 |
+| **系统测试** | http://localhost:3001/test | 功能验证页面 |
 
 ## 🛠 技术架构
 
