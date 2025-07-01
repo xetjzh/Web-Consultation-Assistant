@@ -1,6 +1,6 @@
-# Web-Consultation-Assistant - 完整集成系统
+# web-consultation-assistant - 完整集成系统
 
-一个完整的Web-Consultation-Assistant全栈系统，实现了前端表单与后端数据库的无缝集成，支持统一导航和双重数据保存。
+一个完整的web-consultation-assistant全栈系统，实现了前端表单与后端数据库的无缝集成，支持统一导航和双重数据保存。
 
 ## ✨ 系统特性
 
@@ -44,7 +44,7 @@
 1. **克隆项目**
    ```bash
    git clone <repository-url>
-   cd Web-Consultation-Assistant/Backend
+   cd web-consultation-assistant/Backend
    ```
 
 2. **安装依赖**
@@ -279,8 +279,8 @@ CMD ["npm", "start"]
 ```
 
 ```bash
-docker build -t medical-consultation-api .
-docker run -d -p 3000:3000 --name medical-api medical-consultation-api
+docker build -t web-consultation-assistant-api .
+docker run -d -p 3000:3000 --name web-api web-consultation-assistant-api
 ```
 
 ## 开发指南
@@ -409,7 +409,7 @@ mysqldump -u root -p$DB_PASSWORD medical_consultation > /backup/medical_${DATE}.
 
 如有问题，请通过以下方式联系：
 
-- 📧 Email: support@medical-consultation.com
+- 📧 Email: support@web-consultation-assistant.com
 - 📞 Phone: +86-xxx-xxxx-xxxx
 - 💬 WeChat: medical-support
 

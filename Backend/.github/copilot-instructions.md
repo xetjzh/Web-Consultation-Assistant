@@ -1,9 +1,9 @@
 <!-- Use this file to provide workspace-specific custom instructions to Copilot. For more details, visit https://code.visualstudio.com/docs/copilot/copilot-customization#_use-a-githubcopilotinstructionsmd-file -->
 
-# Web-Consultation-Assistant项目 - Copilot 指引
+# web-consultation-assistant项目 - Copilot 指引
 
 ## 项目概述
-这是一个Web-Consultation-Assistant全栈项目，包含前端HTML表单和后端Node.js API服务。
+这是一个web-consultation-assistant全栈项目，包含前端HTML表单和后端Node.js API服务。
 
 ## 技术栈
 - **后端**: Node.js + Express.js + MySQL

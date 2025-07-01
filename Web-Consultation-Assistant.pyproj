@@ -15,8 +15,8 @@
     <WebBrowserUrl>http://localhost</WebBrowserUrl>
     <OutputPath>.</OutputPath>
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
-    <Name>Web-Consultation-Assistant</Name>
-    <RootNamespace>Web-Consultation-Assistant</RootNamespace>
+    <n>web-consultation-assistant</n>
+    <RootNamespace>web-consultation-assistant</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

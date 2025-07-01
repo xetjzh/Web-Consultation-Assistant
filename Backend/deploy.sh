@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Web-Consultation-Assistant后端部署脚本
+# web-consultation-assistant后端部署脚本
 # 适用于阿里云ECS、腾讯云CVM等Linux服务器
 
-echo "🚀 开始部署Web-Consultation-Assistant后端系统..."
+echo "🚀 开始部署web-consultation-assistant后端系统..."
 
 # 检查Node.js环境
 if ! command -v node &> /dev/null; then
@@ -59,7 +59,7 @@ fi
 cat > ecosystem.config.js << EOF
 module.exports = {
   apps: [{
-    name: 'medical-consultation-api',
+    name: 'web-consultation-assistant-api',
     script: 'server.js',
     instances: 'max',
     exec_mode: 'cluster',
@@ -81,7 +81,7 @@ EOF
 mkdir -p logs
 
 # 启动服务
-echo "🚀 启动Web-Consultation-Assistant服务..."
+echo "🚀 启动web-consultation-assistant服务..."
 pm2 start ecosystem.config.js
 
 # 设置开机自启
@@ -90,9 +90,9 @@ pm2 save
 
 echo "✅ 部署完成！"
 echo "📋 服务状态: pm2 status"
-echo "📝 查看日志: pm2 logs medical-consultation-api"
-echo "🔄 重启服务: pm2 restart medical-consultation-api"
-echo "🛑 停止服务: pm2 stop medical-consultation-api"
+echo "📝 查看日志: pm2 logs web-consultation-assistant-api"
+echo "🔄 重启服务: pm2 restart web-consultation-assistant-api"
+echo "🛑 停止服务: pm2 stop web-consultation-assistant-api"
 echo ""
 echo "🌐 服务地址: http://your-server-ip:3001"
 echo "🔗 健康检查: http://your-server-ip:3001/api/health"

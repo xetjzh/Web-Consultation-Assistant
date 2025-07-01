@@ -1,10 +1,10 @@
 version: '3.8'
 
 services:
-  # Web-Consultation-Assistant后端API
+  # web-consultation-assistant后端API
   medical-api:
     build: .
-    container_name: medical-consultation-api
+    container_name: web-consultation-assistant-api
     ports:
       - "3001:3001"
     environment:
