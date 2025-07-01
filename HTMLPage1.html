@@ -47,6 +47,33 @@
             display: none; 
         }
         
+        /* 折叠功能样式 */
+        .section h2 {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            padding-right: 20px;
+        }
+        
+        .section h2::after {
+            content: '▼';
+            position: absolute;
+            right: 0;
+            transition: transform 0.3s ease;
+        }
+        
+        .section.collapsed h2::after {
+            transform: rotate(-90deg);
+        }
+        
+        .section.collapsed .section-content {
+            display: none;
+        }
+        
+        .section-content {
+            transition: all 0.3s ease;
+        }
+        
         .form-row { 
             margin-bottom: 15px;
             display: flex;
@@ -453,6 +480,36 @@
             }
         }
         
+        // 为疾病生成药物输入框
+        function generateDiseaseInputs(disease, count) {
+            const container = document.getElementById(disease + '-drug-container');
+            if (!container) return;
+            
+            container.innerHTML = ''; // 清空现有内容
+            
+            if (count == 0) {
+                container.innerHTML = '<div style="margin-top: 5px;"><em>未用药治疗</em></div>';
+                return;
+            }
+            
+            for (let i = 1; i <= count; i++) {
+                const drugRow = document.createElement('div');
+                drugRow.style.marginTop = '5px';
+                drugRow.innerHTML = `
+                    <input type="text" placeholder="药物名称" style="margin: 2px;">
+                    <input type="text" placeholder="剂量规格" style="margin: 2px;">
+                    <input type="text" placeholder="用药效果" style="margin: 2px;">
+                `;
+                container.appendChild(drugRow);
+            }
+        }
+        
+        // 添加折叠功能
+        function toggleSection(element) {
+            const section = element.closest('.section');
+            section.classList.toggle('collapsed');
+        }
+        
         // 为新增的toggleDisplay元素添加支持
         function setupToggleDisplays() {
             // 获取所有需要隐藏/显示的元素ID列表
@@ -462,7 +519,12 @@
                 // 家族史
                 'father-health', 'mother-health', 'family-disease', 'siblings-health',
                 // 系统回顾
-                'weight-change',
+                'weight-change', 'fever-detail', 'fatigue-detail', 'sweats-detail',
+                'cough-detail', 'sputum-detail', 'hemoptysis-detail', 'chest-pain-detail', 'dyspnea-detail',
+                'palpitation-detail', 'chest-tightness-detail', 'edema-system-detail', 'cyanosis-detail',
+                'appetite-detail', 'nausea-detail', 'vomiting-detail', 'abdominal-pain-detail', 'diarrhea-detail', 'constipation-detail',
+                'urinary-frequency-detail', 'urinary-urgency-detail', 'dysuria-detail', 'hematuria-detail', 'nocturia-detail',
+                'headache-detail', 'dizziness-detail', 'insomnia-detail', 'memory-loss-detail', 'numbness-detail',
                 // 既往史
                 'hypertension-detail', 'diabetes-detail', 'heart-disease-detail', 'stroke-detail',
                 'liver-disease-detail', 'kidney-disease-detail', 'cancer-detail', 'other-chronic-detail',
@@ -475,14 +537,14 @@
                 'smoking-detail', 'drinking-detail', 'drug-dependence', 'drug-abuse',
                 'sexual-history', 'std-history',
                 // 生育史
-                'spontaneous-abortion', 'induced-abortion', 'delivery-detail', 'newborn-health',
+                'fertility-history', 'spontaneous-abortion', 'induced-abortion', 'delivery-detail', 'newborn-health',
                 'breastfeeding', 'contraception', 'infertility', 'assisted-reproduction', 'spouse-fertility',
                 // 体格检查详情
                 'edema-detail', 'rash-detail', 'lymph-detail', 'tenderness-detail', 
                 'liver-detail', 'spleen-detail', 'muscle-strength-detail', 'joint-detail',
                 // 辅助检查
                 'blood-test', 'urine-test', 'liver-test', 'kidney-test', 
-                'xray-test', 'ct-test', 'mri-test', 'ultrasound-test', 'surgery-plan',
+                'xray-test', 'ct-test', 'mri-test', 'ultrasound-test',
                 // 症状缓解相关
                 'relief-rest', 'relief-medicine', 'relief-other', 'relief-options', 'no-relief'
             ];
@@ -568,6 +630,9 @@
             // 初始化toggle显示状态
             setupToggleDisplays();
             
+            // 初始化折叠功能
+            initializeCollapsibleSections();
+            
             // 移动端兼容性增强
             enhanceMobileCompatibility();
             
@@ -602,6 +667,16 @@
                 }
             }
         });
+        
+        // 初始化折叠功能
+        function initializeCollapsibleSections() {
+            const sectionHeaders = document.querySelectorAll('.section h2');
+            sectionHeaders.forEach(header => {
+                header.addEventListener('click', function() {
+                    toggleSection(this);
+                });
+            });
+        }
         
         // 手动恢复数据功能
         function restoreForm() {
@@ -664,37 +739,83 @@
         }
         
         // 添加导出功能
-        function exportToPDF() {
-            window.print();
-        }
-        
         function exportToWord() {
             // 获取表单数据
             const formData = {};
             const inputs = document.querySelectorAll('input, select, textarea');
+            
+            // 字段中文映射
+            const fieldNames = {
+                'patient_name': '患者姓名',
+                'patient_gender': '性别',
+                'patient_age': '年龄',
+                'patient_ethnicity': '民族',
+                'marital_status': '婚姻状况',
+                'birth_place': '出生地',
+                'current_address': '现住址',
+                'patient_occupation': '职业',
+                'patient_workplace': '工作单位',
+                'admission_date': '入院日期',
+                'record_date': '记录日期',
+                'emergency_contact_name': '紧急联系人姓名',
+                'emergency_contact_relation': '与患者关系',
+                'emergency_contact_phone': '联系电话',
+                'history_source': '病史来源',
+                'history_reliability': '可靠程度',
+                'chief_complaint': '主诉',
+                'temperature': '体温',
+                'pulse': '脉搏',
+                'respiration': '呼吸',
+                'blood_pressure': '血压',
+                'height': '身高',
+                'weight': '体重'
+            };
+            
             inputs.forEach(input => {
                 if (input.value && (input.name || input.placeholder)) {
                     const key = input.name || input.placeholder;
-                    formData[key] = input.value;
+                    const chineseName = fieldNames[key] || key;
+                    formData[chineseName] = input.value;
                 }
             });
             
             // 创建Word文档内容
-            let content = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>问诊记录</title></head><body>';
-            content += '<h1 style="text-align:center;">问诊记录</h1>';
+            let content = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>问诊记录</title>';
+            content += '<style>body{font-family:SimSun;line-height:1.6;margin:20px;}h1{text-align:center;margin-bottom:20px;}p{margin:5px 0;}</style>';
+            content += '</head><body>';
+            content += '<h1>问诊记录</h1>';
             
-            // 添加药物数量信息
-            const drugCountSelect = document.getElementById('drug-count-select');
-            if (drugCountSelect && drugCountSelect.value !== '0') {
-                content += `<p><strong>用药种类数量：</strong>${drugCountSelect.options[drugCountSelect.selectedIndex].text}</p>`;
-            }
+            // 按模块分组显示
+            const sections = {
+                '基本信息': ['患者姓名', '性别', '年龄', '民族', '婚姻状况', '出生地', '现住址', '职业', '工作单位', '入院日期', '记录日期'],
+                '联系信息': ['紧急联系人姓名', '与患者关系', '联系电话', '病史来源', '可靠程度'],
+                '主诉': ['主诉'],
+                '生命体征': ['体温', '脉搏', '呼吸', '血压', '身高', '体重']
+            };
             
+            Object.keys(sections).forEach(sectionName => {
+                const fields = sections[sectionName];
+                const hasData = fields.some(field => formData[field]);
+                
+                if (hasData) {
+                    content += `<h2>${sectionName}</h2>`;
+                    fields.forEach(field => {
+                        if (formData[field]) {
+                            content += `<p><strong>${field}：</strong>${formData[field]}</p>`;
+                        }
+                    });
+                }
+            });
+            
+            // 添加其他字段
             Object.keys(formData).forEach(key => {
-                if (key !== 'drug_count') {
+                const isInSections = Object.values(sections).flat().includes(key);
+                if (!isInSections) {
                     content += `<p><strong>${key}：</strong>${formData[key]}</p>`;
                 }
             });
             
+            content += '<p style="margin-top:30px;"><strong>生成时间：</strong>' + new Date().toLocaleString('zh-CN') + '</p>';
             content += '</body></html>';
             
             // 创建下载链接
@@ -702,7 +823,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = '问诊记录.doc';
+            a.download = '问诊记录_' + new Date().toISOString().slice(0,10) + '.doc';
             a.click();
             URL.revokeObjectURL(url);
         }
@@ -745,11 +866,10 @@
     </script>
 </head>
 <body>
-    <h1>问诊助手</h1>
-
-    <!-- 基本信息 -->
+    <h1>问诊助手</h1>    <!-- 基本信息 -->
     <div class="section">
         <h2>基本信息</h2>
+        <div class="section-content">
         <div class="form-row">
             <strong>病人信息：</strong>
             <label>姓名</label><input type="text" name="patient_name">
@@ -775,20 +895,6 @@
             <label>工作单位</label><input type="text" name="patient_workplace">
             <label>入院日期</label><input type="date" name="admission_date">
             <label>记录日期</label><input type="date" name="record_date">
-        </div>
-        <div class="form-row">
-            <strong>联系方式：</strong>
-            <label>患者电话</label><input type="tel" name="patient_phone">
-            <label>身份证号</label><input type="text" name="patient_id">
-            <label>医保类型</label>
-            <select name="insurance_type">
-                <option>城镇职工基本医疗保险</option>
-                <option>城乡居民基本医疗保险</option>
-                <option>新型农村合作医疗</option>
-                <option>公费医疗</option>
-                <option>商业保险</option>
-                <option>自费</option>
-            </select>
         </div>
         <div class="form-row">
             <strong>紧急联系人：</strong>
@@ -822,17 +928,21 @@
                 <option>不可靠</option>
             </select>
         </div>
+        </div>
     </div>
 
     <!-- 主诉 -->
     <div class="section">
         <h2>主诉</h2>
+        <div class="section-content">
         <textarea rows="2" placeholder="请填写主诉（简要描述主要症状和持续时间）" name="chief_complaint"></textarea>
+        </div>
     </div>
 
     <!-- 现病史 -->
     <div class="section">
         <h2>现病史</h2>
+        <div class="section-content">
         <div class="form-row">
             <strong>起病情况：</strong>
             <label>起病时间</label><input type="text" placeholder="具体日期/时间">
@@ -931,6 +1041,7 @@
             </select>
             <label>体重变化</label><input type="text" placeholder="增加/减少多少kg">
         </div>
+        </div>
     </div>
 
     <!-- 既往史 -->
@@ -963,9 +1074,14 @@
                 <input type="text" placeholder="最高血压值">
                 <input type="text" placeholder="治疗情况">
                 <div style="margin-top: 5px;">
-                    <input type="text" placeholder="用药名称(如XX压、XX洛尔等)">
-                    <input type="text" placeholder="用药剂量(如5mg qd)">
-                    <input type="text" placeholder="疗效评价">
+                    <label>用药种类数量</label>
+                    <select onchange="generateDiseaseInputs('hypertension', this.value)">
+                        <option value="0">未用药</option>
+                        <option value="1">1种药物</option>
+                        <option value="2">2种药物</option>
+                        <option value="3">3种药物</option>
+                    </select>
+                    <div id="hypertension-drug-container"></div>
                 </div>
             </span>
         </div>
@@ -980,9 +1096,14 @@
                 <input type="text" placeholder="血糖控制情况">
                 <input type="text" placeholder="治疗方案">
                 <div style="margin-top: 5px;">
-                    <input type="text" placeholder="用药名称(如二甲双胍、胰岛素等)">
-                    <input type="text" placeholder="用药剂量">
-                    <input type="text" placeholder="血糖控制效果">
+                    <label>用药种类数量</label>
+                    <select onchange="generateDiseaseInputs('diabetes', this.value)">
+                        <option value="0">未用药</option>
+                        <option value="1">1种药物</option>
+                        <option value="2">2种药物</option>
+                        <option value="3">3种药物</option>
+                    </select>
+                    <div id="diabetes-drug-container"></div>
                 </div>
             </span>
         </div>
@@ -997,9 +1118,14 @@
                 <input type="text" placeholder="确诊时间">
                 <input type="text" placeholder="治疗情况">
                 <div style="margin-top: 5px;">
-                    <input type="text" placeholder="用药名称(如阿司匹林、硝酸甘油等)">
-                    <input type="text" placeholder="用药剂量">
-                    <input type="text" placeholder="症状改善情况">
+                    <label>用药种类数量</label>
+                    <select onchange="generateDiseaseInputs('heart', this.value)">
+                        <option value="0">未用药</option>
+                        <option value="1">1种药物</option>
+                        <option value="2">2种药物</option>
+                        <option value="3">3种药物</option>
+                    </select>
+                    <div id="heart-drug-container"></div>
                 </div>
             </span>
         </div>
@@ -1413,25 +1539,6 @@
             </select>
             <label>专业</label><input type="text" placeholder="所学专业">
         </div>
-        <div class="form-row">
-            <strong>经济状况：</strong>
-            <label>家庭经济状况</label>
-            <select>
-                <option>良好</option>
-                <option>中等</option>
-                <option>困难</option>
-                <option>贫困</option>
-            </select>
-            <label>医疗保险</label>
-            <select>
-                <option>城镇职工医保</option>
-                <option>城乡居民医保</option>
-                <option>公费医疗</option>
-                <option>商业保险</option>
-                <option>自费</option>
-                <option>其他</option>
-            </select>
-        </div>
     </div>
 
     <!-- 婚姻史 -->
@@ -1466,153 +1573,162 @@
     <div class="section">
         <h2>生育史</h2>
         <div class="form-row">
-            <strong>妊娠史：</strong>
-            <label>妊娠次数</label><input type="number" min="0" placeholder="总妊娠次数">
-            <label>足月产</label><input type="number" min="0" placeholder="次">
-            <label>早产</label><input type="number" min="0" placeholder="次">
-            <label>流产</label><input type="number" min="0" placeholder="次">
-            <label>死胎</label><input type="number" min="0" placeholder="次">
-            <label>现存子女</label><input type="number" min="0" placeholder="人">
-        </div>
-        <div class="form-row">
-            <strong>流产史详情：</strong>
-            <label>自然流产</label>
-            <select onchange="toggleDisplay('spontaneous-abortion', this.value)">
+            <strong>是否有过生育经历：</strong>
+            <select onchange="toggleDisplay('fertility-history', this.value, '有')" name="has_fertility_history">
                 <option>无</option>
                 <option>有</option>
             </select>
-            <span id="spontaneous-abortion" class="hidden">
-                <input type="text" placeholder="流产次数">
-                <input type="text" placeholder="流产时间(孕周)">
-                <input type="text" placeholder="流产原因">
-            </span>
         </div>
-        <div class="form-row">
-            <label>人工流产</label>
-            <select onchange="toggleDisplay('induced-abortion', this.value)">
-                <option>无</option>
-                <option>有</option>
-            </select>
-            <span id="induced-abortion" class="hidden">
-                <input type="text" placeholder="流产次数">
-                <input type="text" placeholder="流产方式">
-                <input type="text" placeholder="流产原因">
-                <input type="text" placeholder="术后恢复">
-            </span>
-        </div>
-        <div class="form-row">
-            <strong>分娩史：</strong>
-            <label>分娩方式</label>
-            <select onchange="toggleDisplay('delivery-detail', this.value)">
-                <option>无分娩史</option>
-                <option>自然分娩</option>
-                <option>剖宫产</option>
-                <option>助产分娩</option>
-            </select>
-            <span id="delivery-detail" class="hidden">
-                <input type="text" placeholder="分娩时间">
-                <input type="text" placeholder="孕周">
-                <input type="text" placeholder="产程时间">
-                <input type="text" placeholder="分娩医院">
-            </span>
-        </div>
-        <div class="form-row">
-            <strong>新生儿情况：</strong>
-            <label>新生儿体重</label><input type="text" placeholder="出生体重(kg)">
-            <label>新生儿健康状况</label>
-            <select onchange="toggleDisplay('newborn-health', this.value)">
-                <option>健康</option>
-                <option>异常</option>
-            </select>
-            <span id="newborn-health" class="hidden">
-                <textarea rows="2" placeholder="新生儿异常情况描述"></textarea>
-            </span>
-        </div>
-        <div class="form-row">
-            <strong>产后情况：</strong>
-            <label>产褥期</label>
-            <select>
-                <option>正常</option>
-                <option>发热</option>
-                <option>感染</option>
-                <option>其他异常</option>
-            </select>
-            <label>哺乳情况</label>
-            <select onchange="toggleDisplay('breastfeeding', this.value)">
-                <option>纯母乳喂养</option>
-                <option>混合喂养</option>
-                <option>人工喂养</option>
-                <option>无法哺乳</option>
-            </select>
-            <span id="breastfeeding" class="hidden">
-                <input type="text" placeholder="哺乳时间">
-                <input type="text" placeholder="无法哺乳原因">
-            </span>
-        </div>
-        <div class="form-row">
-            <strong>避孕史：</strong>
-            <label>避孕方法</label>
-            <select onchange="toggleDisplay('contraception', this.value)">
-                <option>无避孕</option>
-                <option>安全期避孕</option>
-                <option>避孕套</option>
-                <option>口服避孕药</option>
-                <option>宫内节育器</option>
-                <option>结扎</option>
-                <option>其他</option>
-            </select>
-            <span id="contraception" class="hidden">
-                <input type="text" placeholder="使用时间">
-                <input type="text" placeholder="效果及副作用">
-            </span>
-        </div>
-        <div class="form-row">
-            <strong>不孕不育史：</strong>
-            <label>不孕症</label>
-            <select onchange="toggleDisplay('infertility', this.value)">
-                <option>无</option>
-                <option>原发性不孕</option>
-                <option>继发性不孕</option>
-            </select>
-            <span id="infertility" class="hidden">
-                <input type="text" placeholder="不孕时间">
-                <input type="text" placeholder="检查情况">
-                <input type="text" placeholder="治疗经过">
-            </span>
-        </div>
-        <div class="form-row">
-            <strong>辅助生殖史：</strong>
-            <label>辅助生殖技术</label>
-            <select onchange="toggleDisplay('assisted-reproduction', this.value)">
-                <option>无</option>
-                <option>人工授精</option>
-                <option>试管婴儿</option>
-                <option>其他</option>
-            </select>
-            <span id="assisted-reproduction" class="hidden">
-                <input type="text" placeholder="技术类型">
-                <input type="text" placeholder="实施时间">
-                <input type="text" placeholder="成功次数">
-                <input type="text" placeholder="实施医院">
-            </span>
-        </div>
-        <div class="form-row">
-            <strong>配偶情况：</strong>
-            <label>配偶年龄</label><input type="number" min="0" placeholder="岁">
-            <label>配偶健康状况</label>
-            <select>
-                <option>健康</option>
-                <option>一般</option>
-                <option>有疾病</option>
-            </select>
-            <label>配偶生育史</label>
-            <select onchange="toggleDisplay('spouse-fertility', this.value)">
-                <option>正常</option>
-                <option>异常</option>
-            </select>
-            <span id="spouse-fertility" class="hidden">
-                <textarea rows="2" placeholder="配偶生育异常情况"></textarea>
-            </span>
+        <div id="fertility-history" class="hidden">
+            <div class="form-row">
+                <strong>妊娠史：</strong>
+                <label>妊娠次数</label><input type="number" min="0" placeholder="总妊娠次数">
+                <label>足月产</label><input type="number" min="0" placeholder="次">
+                <label>早产</label><input type="number" min="0" placeholder="次">
+                <label>流产</label><input type="number" min="0" placeholder="次">
+                <label>死胎</label><input type="number" min="0" placeholder="次">
+                <label>现存子女</label><input type="number" min="0" placeholder="人">
+            </div>
+            <div class="form-row">
+                <strong>流产史详情：</strong>
+                <label>自然流产</label>
+                <select onchange="toggleDisplay('spontaneous-abortion', this.value)">
+                    <option>无</option>
+                    <option>有</option>
+                </select>
+                <span id="spontaneous-abortion" class="hidden">
+                    <input type="text" placeholder="流产次数">
+                    <input type="text" placeholder="流产时间(孕周)">
+                    <input type="text" placeholder="流产原因">
+                </span>
+            </div>
+            <div class="form-row">
+                <label>人工流产</label>
+                <select onchange="toggleDisplay('induced-abortion', this.value)">
+                    <option>无</option>
+                    <option>有</option>
+                </select>
+                <span id="induced-abortion" class="hidden">
+                    <input type="text" placeholder="流产次数">
+                    <input type="text" placeholder="流产方式">
+                    <input type="text" placeholder="流产原因">
+                    <input type="text" placeholder="术后恢复">
+                </span>
+            </div>
+            <div class="form-row">
+                <strong>分娩史：</strong>
+                <label>分娩方式</label>
+                <select onchange="toggleDisplay('delivery-detail', this.value, '自然分娩')" name="delivery_type">
+                    <option>无分娩史</option>
+                    <option>自然分娩</option>
+                    <option>剖宫产</option>
+                    <option>助产分娩</option>
+                </select>
+                <span id="delivery-detail" class="hidden">
+                    <input type="text" placeholder="分娩时间">
+                    <input type="text" placeholder="孕周">
+                    <input type="text" placeholder="产程时间">
+                    <input type="text" placeholder="分娩医院">
+                </span>
+            </div>
+            <div class="form-row">
+                <strong>新生儿情况：</strong>
+                <label>新生儿体重</label><input type="text" placeholder="出生体重(kg)">
+                <label>新生儿健康状况</label>
+                <select onchange="toggleDisplay('newborn-health', this.value, '异常')">
+                    <option>健康</option>
+                    <option>异常</option>
+                </select>
+                <span id="newborn-health" class="hidden">
+                    <textarea rows="2" placeholder="新生儿异常情况描述"></textarea>
+                </span>
+            </div>
+            <div class="form-row">
+                <strong>产后情况：</strong>
+                <label>产褥期</label>
+                <select>
+                    <option>正常</option>
+                    <option>发热</option>
+                    <option>感染</option>
+                    <option>其他异常</option>
+                </select>
+                <label>哺乳情况</label>
+                <select onchange="toggleDisplay('breastfeeding', this.value, '无法哺乳')">
+                    <option>纯母乳喂养</option>
+                    <option>混合喂养</option>
+                    <option>人工喂养</option>
+                    <option>无法哺乳</option>
+                </select>
+                <span id="breastfeeding" class="hidden">
+                    <input type="text" placeholder="哺乳时间">
+                    <input type="text" placeholder="无法哺乳原因">
+                </span>
+            </div>
+            <div class="form-row">
+                <strong>避孕史：</strong>
+                <label>避孕方法</label>
+                <select onchange="toggleDisplay('contraception', this.value, '无避孕')">
+                    <option>无避孕</option>
+                    <option>安全期避孕</option>
+                    <option>避孕套</option>
+                    <option>口服避孕药</option>
+                    <option>宫内节育器</option>
+                    <option>结扎</option>
+                    <option>其他</option>
+                </select>
+                <span id="contraception" class="hidden">
+                    <input type="text" placeholder="使用时间">
+                    <input type="text" placeholder="效果及副作用">
+                </span>
+            </div>
+            <div class="form-row">
+                <strong>不孕不育史：</strong>
+                <label>不孕症</label>
+                <select onchange="toggleDisplay('infertility', this.value, '原发性不孕')">
+                    <option>无</option>
+                    <option>原发性不孕</option>
+                    <option>继发性不孕</option>
+                </select>
+                <span id="infertility" class="hidden">
+                    <input type="text" placeholder="不孕时间">
+                    <input type="text" placeholder="检查情况">
+                    <input type="text" placeholder="治疗经过">
+                </span>
+            </div>
+            <div class="form-row">
+                <strong>辅助生殖史：</strong>
+                <label>辅助生殖技术</label>
+                <select onchange="toggleDisplay('assisted-reproduction', this.value, '人工授精')">
+                    <option>无</option>
+                    <option>人工授精</option>
+                    <option>试管婴儿</option>
+                    <option>其他</option>
+                </select>
+                <span id="assisted-reproduction" class="hidden">
+                    <input type="text" placeholder="技术类型">
+                    <input type="text" placeholder="实施时间">
+                    <input type="text" placeholder="成功次数">
+                    <input type="text" placeholder="实施医院">
+                </span>
+            </div>
+            <div class="form-row">
+                <strong>配偶情况：</strong>
+                <label>配偶年龄</label><input type="number" min="0" placeholder="岁">
+                <label>配偶健康状况</label>
+                <select>
+                    <option>健康</option>
+                    <option>一般</option>
+                    <option>有疾病</option>
+                </select>
+                <label>配偶生育史</label>
+                <select onchange="toggleDisplay('spouse-fertility', this.value, '异常')">
+                    <option>正常</option>
+                    <option>异常</option>
+                </select>
+                <span id="spouse-fertility" class="hidden">
+                    <textarea rows="2" placeholder="配偶生育异常情况"></textarea>
+                </span>
+            </div>
         </div>
     </div>
 
@@ -1708,22 +1824,31 @@
         <div class="form-row">
             <strong>一般状况：</strong>
             <label>发热</label>
-            <select>
+            <select onchange="toggleDisplay('fever-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="fever-detail" class="hidden">
+                <input type="text" placeholder="体温、发热持续时间、热型等">
+            </span>
             <label>乏力</label>
-            <select>
+            <select onchange="toggleDisplay('fatigue-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="fatigue-detail" class="hidden">
+                <input type="text" placeholder="乏力程度、持续时间、诱因等">
+            </span>
             <label>盗汗</label>
-            <select>
+            <select onchange="toggleDisplay('sweats-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="sweats-detail" class="hidden">
+                <input type="text" placeholder="盗汗程度、频率、持续时间等">
+            </span>
             <label>体重变化</label>
-            <select onchange="toggleDisplay('weight-change', this.value)">
+            <select onchange="toggleDisplay('weight-change', this.value, '增加')">
                 <option>无</option>
                 <option>增加</option>
                 <option>减少</option>
@@ -1735,143 +1860,218 @@
         <div class="form-row">
             <strong>呼吸系统：</strong>
             <label>咳嗽</label>
-            <select>
+            <select onchange="toggleDisplay('cough-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="cough-detail" class="hidden">
+                <input type="text" placeholder="咳嗽性质、频率、诱因等">
+            </span>
             <label>咳痰</label>
-            <select>
+            <select onchange="toggleDisplay('sputum-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="sputum-detail" class="hidden">
+                <input type="text" placeholder="痰量、性状、颜色等">
+            </span>
             <label>咯血</label>
-            <select>
+            <select onchange="toggleDisplay('hemoptysis-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="hemoptysis-detail" class="hidden">
+                <input type="text" placeholder="咯血量、颜色、频率等">
+            </span>
             <label>胸痛</label>
-            <select>
+            <select onchange="toggleDisplay('chest-pain-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="chest-pain-detail" class="hidden">
+                <input type="text" placeholder="胸痛部位、性质、诱因等">
+            </span>
             <label>呼吸困难</label>
-            <select>
+            <select onchange="toggleDisplay('dyspnea-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="dyspnea-detail" class="hidden">
+                <input type="text" placeholder="呼吸困难程度、诱因、缓解方式等">
+            </span>
         </div>
         <div class="form-row">
             <strong>循环系统：</strong>
             <label>心悸</label>
-            <select>
+            <select onchange="toggleDisplay('palpitation-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="palpitation-detail" class="hidden">
+                <input type="text" placeholder="心悸诱因、频率、持续时间等">
+            </span>
             <label>胸闷</label>
-            <select>
+            <select onchange="toggleDisplay('chest-tightness-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="chest-tightness-detail" class="hidden">
+                <input type="text" placeholder="胸闷诱因、程度、缓解方式等">
+            </span>
             <label>水肿</label>
-            <select>
+            <select onchange="toggleDisplay('edema-system-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="edema-system-detail" class="hidden">
+                <input type="text" placeholder="水肿部位、程度、时间等">
+            </span>
             <label>紫绀</label>
-            <select>
+            <select onchange="toggleDisplay('cyanosis-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="cyanosis-detail" class="hidden">
+                <input type="text" placeholder="紫绀部位、程度、诱因等">
+            </span>
         </div>
         <div class="form-row">
             <strong>消化系统：</strong>
             <label>食欲</label>
-            <select>
+            <select onchange="toggleDisplay('appetite-detail', this.value, '减退')">
                 <option>正常</option>
                 <option>减退</option>
                 <option>亢进</option>
             </select>
+            <span id="appetite-detail" class="hidden">
+                <input type="text" placeholder="食欲变化程度、持续时间等">
+            </span>
             <label>恶心</label>
-            <select>
+            <select onchange="toggleDisplay('nausea-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="nausea-detail" class="hidden">
+                <input type="text" placeholder="恶心诱因、频率、伴随症状等">
+            </span>
             <label>呕吐</label>
-            <select>
+            <select onchange="toggleDisplay('vomiting-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="vomiting-detail" class="hidden">
+                <input type="text" placeholder="呕吐物性状、频率、诱因等">
+            </span>
             <label>腹痛</label>
-            <select>
+            <select onchange="toggleDisplay('abdominal-pain-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="abdominal-pain-detail" class="hidden">
+                <input type="text" placeholder="腹痛部位、性质、诱因等">
+            </span>
             <label>腹泻</label>
-            <select>
+            <select onchange="toggleDisplay('diarrhea-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="diarrhea-detail" class="hidden">
+                <input type="text" placeholder="大便次数、性状、诱因等">
+            </span>
             <label>便秘</label>
-            <select>
+            <select onchange="toggleDisplay('constipation-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="constipation-detail" class="hidden">
+                <input type="text" placeholder="便秘持续时间、程度、诱因等">
+            </span>
         </div>
         <div class="form-row">
             <strong>泌尿生殖系统：</strong>
             <label>尿频</label>
-            <select>
+            <select onchange="toggleDisplay('urinary-frequency-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="urinary-frequency-detail" class="hidden">
+                <input type="text" placeholder="尿频程度、白天夜间情况等">
+            </span>
             <label>尿急</label>
-            <select>
+            <select onchange="toggleDisplay('urinary-urgency-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="urinary-urgency-detail" class="hidden">
+                <input type="text" placeholder="尿急程度、诱因、伴随症状等">
+            </span>
             <label>尿痛</label>
-            <select>
+            <select onchange="toggleDisplay('dysuria-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="dysuria-detail" class="hidden">
+                <input type="text" placeholder="尿痛部位、程度、诱因等">
+            </span>
             <label>血尿</label>
-            <select>
+            <select onchange="toggleDisplay('hematuria-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="hematuria-detail" class="hidden">
+                <input type="text" placeholder="血尿颜色、程度、诱因等">
+            </span>
             <label>夜尿增多</label>
-            <select>
+            <select onchange="toggleDisplay('nocturia-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="nocturia-detail" class="hidden">
+                <input type="text" placeholder="夜尿次数、尿量、持续时间等">
+            </span>
         </div>
         <div class="form-row">
             <strong>神经系统：</strong>
             <label>头痛</label>
-            <select>
+            <select onchange="toggleDisplay('headache-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="headache-detail" class="hidden">
+                <input type="text" placeholder="头痛部位、性质、诱因等">
+            </span>
             <label>头晕</label>
-            <select>
+            <select onchange="toggleDisplay('dizziness-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="dizziness-detail" class="hidden">
+                <input type="text" placeholder="头晕性质、诱因、持续时间等">
+            </span>
             <label>失眠</label>
-            <select>
+            <select onchange="toggleDisplay('insomnia-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="insomnia-detail" class="hidden">
+                <input type="text" placeholder="失眠类型、程度、诱因等">
+            </span>
             <label>记忆力减退</label>
-            <select>
+            <select onchange="toggleDisplay('memory-loss-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="memory-loss-detail" class="hidden">
+                <input type="text" placeholder="记忆减退程度、持续时间等">
+            </span>
             <label>肢体麻木</label>
-            <select>
+            <select onchange="toggleDisplay('numbness-detail', this.value)">
                 <option>无</option>
                 <option>有</option>
             </select>
+            <span id="numbness-detail" class="hidden">
+                <input type="text" placeholder="麻木部位、程度、诱因等">
+            </span>
         </div>
     </div>
 
@@ -2473,177 +2673,22 @@
         </div>
     </div>
 
-    <!-- 诊断 -->
-    <div class="section">
-        <h2>诊断</h2>
-        <div class="form-row">
-            <strong>主要诊断：</strong>
-            <input type="text" placeholder="主要疾病诊断" name="primary_diagnosis">
-            <label>诊断时间</label><input type="date" name="primary_diagnosis_date">
-            <label>ICD编码</label><input type="text" placeholder="ICD-10编码" name="primary_icd_code">
-        </div>
-        <div class="form-row">
-            <strong>其他诊断：</strong>
-            <textarea rows="3" placeholder="其他相关诊断，每行一个" name="other_diagnoses"></textarea>
-        </div>
-        <div class="form-row">
-            <strong>诊断依据：</strong>
-            <textarea rows="3" placeholder="支持主要诊断的病史、体征、检查结果等依据" name="diagnosis_basis"></textarea>
-        </div>
-        <div class="form-row">
-            <strong>鉴别诊断：</strong>
-            <textarea rows="3" placeholder="需要排除的疾病及鉴别要点" name="differential_diagnosis"></textarea>
-        </div>
-        <div class="form-row">
-            <strong>诊断分期/分级：</strong>
-            <input type="text" placeholder="如肿瘤TNM分期、心功能分级等" name="disease_staging">
-            <label>病情评估</label>
-            <select name="condition_assessment">
-                <option>稳定</option>
-                <option>好转</option>
-                <option>恶化</option>
-                <option>危重</option>
-                <option>临床治愈</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- 治疗方案 -->
-    <div class="section">
-        <h2>治疗方案</h2>
-        <div class="form-row">
-            <strong>治疗原则：</strong>
-            <textarea rows="2" placeholder="总体治疗原则和目标" name="treatment_principle"></textarea>
-        </div>
-        <div class="form-row">
-            <strong>一般治疗：</strong>
-            <label>休息</label>
-            <select name="rest_requirement">
-                <option>一般活动</option>
-                <option>适当休息</option>
-                <option>卧床休息</option>
-                <option>绝对卧床</option>
-            </select>
-            <label>饮食</label>
-            <select name="diet_requirement">
-                <option>普通饮食</option>
-                <option>软食</option>
-                <option>流质饮食</option>
-                <option>禁食</option>
-                <option>特殊饮食</option>
-            </select>
-            <input type="text" placeholder="特殊饮食要求" name="special_diet">
-        </div>
-        <div class="form-row">
-            <strong>药物治疗：</strong>
-            <textarea rows="4" placeholder="具体用药方案：&#10;1. 药物名称 剂量 用法 疗程&#10;2. 药物名称 剂量 用法 疗程&#10;注明注意事项和不良反应监测" name="medication_plan"></textarea>
-        </div>
-        <div class="form-row">
-            <strong>手术治疗：</strong>
-            <select onchange="toggleDisplay('surgery-plan', this.value)" name="surgery_needed">
-                <option>不需要</option>
-                <option>择期手术</option>
-                <option>急诊手术</option>
-                <option>待进一步评估</option>
-            </select>
-            <span id="surgery-plan" class="hidden">
-                <label>手术名称</label><input type="text" placeholder="手术名称" name="surgery_name">
-                <label>手术时机</label><input type="text" placeholder="手术时机" name="surgery_timing">
-                <textarea rows="2" placeholder="手术指征、方案、风险评估" name="surgery_details"></textarea>
-            </span>
-        </div>
-        <div class="form-row">
-            <strong>其他治疗：</strong>
-            <label>物理治疗</label>
-            <select name="physical_therapy">
-                <option>不需要</option>
-                <option>需要</option>
-            </select>
-            <label>心理治疗</label>
-            <select name="psychological_therapy">
-                <option>不需要</option>
-                <option>需要</option>
-            </select>
-            <label>康复治疗</label>
-            <select name="rehabilitation">
-                <option>不需要</option>
-                <option>需要</option>
-            </select>
-            <textarea rows="2" placeholder="其他治疗措施详情" name="other_treatments"></textarea>
-        </div>
-        <div class="form-row">
-            <strong>监测要求：</strong>
-            <textarea rows="2" placeholder="生命体征监测、实验室指标监测、影像学复查等" name="monitoring_requirements"></textarea>
-        </div>
-        <div class="form-row">
-            <strong>随访计划：</strong>
-            <label>随访时间</label><input type="text" placeholder="如1周后、1个月后" name="followup_schedule">
-            <textarea rows="2" placeholder="随访内容：复查项目、评估指标、调整方案依据" name="followup_content"></textarea>
-        </div>
-        <div class="form-row">
-            <strong>患者宣教：</strong>
-            <textarea rows="3" placeholder="疾病知识宣教、用药指导、生活方式建议、注意事项、复诊指征" name="patient_education"></textarea>
-        </div>
-        <div class="form-row">
-            <strong>预后评估：</strong>
-            <select name="prognosis">
-                <option>良好</option>
-                <option>较好</option>
-                <option>一般</option>
-                <option>较差</option>
-                <option>差</option>
-                <option>待观察</option>
-            </select>
-            <textarea rows="1" placeholder="预后评估说明" name="prognosis_notes"></textarea>
-        </div>
-    </div>
-
-    <!-- 医生信息 -->
-    <div class="section">
-        <h2>医生信息</h2>
-        <div class="form-row">
-            <strong>接诊信息：</strong>
-            <label>接诊医生</label><input type="text" placeholder="医生姓名" name="attending_doctor">
-            <label>科室</label><input type="text" placeholder="科室名称" name="department">
-            <label>职称</label>
-            <select name="doctor_title">
-                <option>住院医师</option>
-                <option>主治医师</option>
-                <option>副主任医师</option>
-                <option>主任医师</option>
-            </select>
-            <label>接诊时间</label><input type="datetime-local" name="consultation_time">
-        </div>
-        <div class="form-row">
-            <label>病历类型</label>
-            <select name="record_type">
-                <option>门诊病历</option>
-                <option>急诊病历</option>
-                <option>住院病历</option>
-                <option>会诊记录</option>
-            </select>
-            <label>病历编号</label><input type="text" placeholder="病历号" name="medical_record_number">
-            <label>上级医师</label><input type="text" placeholder="上级医师姓名" name="supervising_doctor">
-        </div>
-        <div class="form-row">
-            <strong>签名确认：</strong>
-            <label>医生签名</label><input type="text" placeholder="医生签名" name="doctor_signature">
-            <label>审核时间</label><input type="datetime-local" name="review_time">
-        </div>
-        <div class="form-row">
-            <strong>备注：</strong>
-            <textarea rows="2" placeholder="其他需要说明的情况" name="medical_notes"></textarea>
-        </div>
-    </div>
-
     <!-- 操作按钮 -->
     <div class="section" style="text-align: center;">
         <button type="button" onclick="saveForm()" style="background-color: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">💾 保存到本地</button>
         <button type="button" onclick="clearForm()" style="background-color: #95a5a6; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">🗑️ 清空表单</button>
         <button type="button" onclick="loadTemplate()" style="background-color: #f39c12; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📋 加载模板</button>
-        <button type="button" onclick="exportToPDF()" style="background-color: #e74c3c; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📄 打印/PDF</button>
         <button type="button" onclick="exportToWord()" style="background-color: #2980b9; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📝 导出Word</button>
         <button type="button" onclick="restoreForm()" style="background-color: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">🔄 恢复数据</button>
+        
+        <div style="margin-top: 20px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; font-size: 12px; color: #666;">
+            <p><strong>💡 使用提示：</strong></p>
+            <p>• 点击各模块标题可折叠/展开内容</p>
+            <p>• 系统回顾中选择"有"会显示详细输入框</p>
+            <p>• 既往史疾病用药支持多种药物选择</p>
+            <p>• 生育史根据是否有生育经历智能显示相关内容</p>
+            <p>• 导出Word文档使用中文字段名，便于阅读</p>
+        </div>
     </div>
 </body>
 </html>
