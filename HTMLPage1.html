@@ -441,13 +441,63 @@
         }
         function onGenderChange(sel) {
             const menstrualHistory = document.getElementById('menstrual-history');
-            if (menstrualHistory) {
-                if (sel.value === "女") {
+            
+            // 查找生育史模块 - 通过查找包含"生育史"标题的section
+            const fertilitySection = Array.from(document.querySelectorAll('.section')).find(section => {
+                const h2 = section.querySelector('h2');
+                return h2 && h2.textContent.trim() === '生育史';
+            });
+            
+            if (sel.value === "女") {
+                // 显示月经史
+                if (menstrualHistory) {
                     menstrualHistory.style.display = "block";
                     menstrualHistory.classList.remove('hidden');
-                } else {
+                }
+                
+                // 显示生育史模块
+                if (fertilitySection) {
+                    fertilitySection.style.display = "block";
+                    fertilitySection.classList.remove('hidden');
+                }
+            } else {
+                // 隐藏月经史
+                if (menstrualHistory) {
                     menstrualHistory.style.display = "none";
                     menstrualHistory.classList.add('hidden');
+                }
+                
+                // 隐藏生育史模块
+                if (fertilitySection) {
+                    fertilitySection.style.display = "none";
+                    fertilitySection.classList.add('hidden');
+                    
+                    // 同时重置生育史相关的表单项
+                    const fertilityInputs = fertilitySection.querySelectorAll('input, select, textarea');
+                    fertilityInputs.forEach(input => {
+                        if (input.type === 'checkbox' || input.type === 'radio') {
+                            input.checked = false;
+                        } else {
+                            input.value = '';
+                            if (input.selectedIndex !== undefined) {
+                                input.selectedIndex = 0;
+                            }
+                        }
+                    });
+                    
+                    // 隐藏生育史相关的动态显示内容
+                    const fertilityDetails = [
+                        'fertility-history', 'spontaneous-abortion', 'induced-abortion', 
+                        'delivery-detail', 'newborn-health', 'breastfeeding', 'contraception', 
+                        'infertility', 'assisted-reproduction', 'spouse-fertility'
+                    ];
+                    fertilityDetails.forEach(id => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            element.style.display = 'none';
+                            element.classList.add('hidden');
+                        }
+                    });
                 }
             }
         }
@@ -629,6 +679,32 @@
                     element.classList.add('hidden');
                 }
             });
+            
+            // 初始化性别相关的显示控制
+            const genderSelect = document.querySelector('[name="patient_gender"]');
+            if (genderSelect) {
+                // 初始隐藏月经史和生育史（默认状态）
+                const menstrualHistory = document.getElementById('menstrual-history');
+                const fertilitySection = Array.from(document.querySelectorAll('.section')).find(section => {
+                    const h2 = section.querySelector('h2');
+                    return h2 && h2.textContent.trim() === '生育史';
+                });
+                
+                if (menstrualHistory) {
+                    menstrualHistory.style.display = 'none';
+                    menstrualHistory.classList.add('hidden');
+                }
+                
+                if (fertilitySection) {
+                    fertilitySection.style.display = 'none';
+                    fertilitySection.classList.add('hidden');
+                }
+                
+                // 如果性别已经选择，应用相应的显示逻辑
+                if (genderSelect.value) {
+                    onGenderChange(genderSelect);
+                }
+            }
         }
         
         function saveForm() {
@@ -731,6 +807,16 @@
                             const input = document.querySelector(`[name="${key}"], [placeholder="${key}"]`);
                             if (input && formData[key]) {
                                 input.value = formData[key];
+                                
+                                // 如果是性别选择，触发性别变化事件
+                                if (key === 'patient_gender') {
+                                    onGenderChange(input);
+                                }
+                                
+                                // 触发其他change事件以显示相关的动态内容
+                                if (input.onchange) {
+                                    input.onchange();
+                                }
                             }
                         }
                     });
@@ -1560,6 +1646,11 @@
                     if (element) {
                         element.value = formData[key];
                         
+                        // 如果是性别选择，触发性别变化事件
+                        if (key === 'patient_gender') {
+                            onGenderChange(element);
+                        }
+                        
                         // 触发change事件以显示相关的动态内容
                         if (element.onchange) {
                             element.onchange();
@@ -1596,6 +1687,23 @@
                     element.style.display = 'none';
                 });
                 
+                // 重置性别相关的显示状态
+                const menstrualHistory = document.getElementById('menstrual-history');
+                const fertilitySection = Array.from(document.querySelectorAll('.section')).find(section => {
+                    const h2 = section.querySelector('h2');
+                    return h2 && h2.textContent.trim() === '生育史';
+                });
+                
+                if (menstrualHistory) {
+                    menstrualHistory.style.display = 'none';
+                    menstrualHistory.classList.add('hidden');
+                }
+                
+                if (fertilitySection) {
+                    fertilitySection.style.display = 'none';
+                    fertilitySection.classList.add('hidden');
+                }
+                
                 alert('表单已清空！');
             }
         }
@@ -1625,6 +1733,11 @@
                     const element = document.querySelector(`[name="${key}"]`);
                     if (element) {
                         element.value = template[key];
+                        
+                        // 如果是性别选择，触发性别变化事件
+                        if (key === 'patient_gender') {
+                            onGenderChange(element);
+                        }
                         
                         // 触发change事件
                         if (element.onchange) {
