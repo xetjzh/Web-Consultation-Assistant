@@ -439,6 +439,217 @@
                 box-sizing: border-box;
             }
         }
+
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        .modal-header {
+            padding: 20px 20px 15px;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .export-options {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .export-option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .export-option:hover {
+            border-color: #3498db;
+            background: #f0f8ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+        }
+
+        .export-option.premium {
+            border-color: #f39c12;
+            background: linear-gradient(135deg, #fff5e6 0%, #fef4e6 100%);
+        }
+
+        .export-option.premium:hover {
+            border-color: #e67e22;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+        }
+
+        .export-icon {
+            font-size: 24px;
+            margin-right: 12px;
+            min-width: 30px;
+        }
+
+        .export-info {
+            flex: 1;
+        }
+
+        .export-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0 0 4px 0;
+            font-size: 14px;
+        }
+
+        .export-desc {
+            color: #7f8c8d;
+            font-size: 12px;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .premium-badge {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translate(-50%, -60%);
+                scale: 0.9;
+            }
+            to { 
+                opacity: 1;
+                transform: translate(-50%, -50%);
+                scale: 1;
+            }
+        }
+
+        /* 移动端弹窗优化 */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                max-height: 85vh;
+            }
+            
+            .export-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-header {
+                padding: 15px;
+            }
+            
+            .modal-body {
+                padding: 15px;
+            }
+            
+            .export-option {
+                padding: 12px;
+            }
+            
+            .export-icon {
+                font-size: 20px;
+                margin-right: 10px;
+                min-width: 25px;
+            }
+            
+            .export-title {
+                font-size: 13px;
+            }
+            
+            .export-desc {
+                font-size: 11px;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
     <script>
         function toggleDisplay(id, value, showValue = "有") {
@@ -1804,7 +2015,960 @@
                 recordDateField.value = today;
             }
         });
+
+        // 弹窗管理函数
+        function showPrintOptions() {
+            document.getElementById('export-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // 防止背景滚动
+        }
+
+        function closeExportModal() {
+            document.getElementById('export-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // 点击遮罩层关闭弹窗
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('export-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeExportModal();
+                }
+            });
+        });
+
+        // ESC键关闭弹窗
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeExportModal();
+            }
+        });
+
+        // 获取表单数据的通用函数
+        function getFormData() {
+            const formData = {};
+            const inputs = document.querySelectorAll('input, select, textarea');
+            
+            inputs.forEach(input => {
+                if (input.name) {
+                    if (input.type === 'checkbox') {
+                        if (input.checked) {
+                            if (!formData[input.name]) formData[input.name] = [];
+                            formData[input.name].push(input.value);
+                        }
+                    } else if (input.type === 'radio') {
+                        if (input.checked) {
+                            formData[input.name] = input.value;
+                        }
+                    } else {
+                        formData[input.name] = input.value;
+                    }
+                }
+            });
+            
+            return formData;
+        }
+
+        // 获取表单数据（中文字段名）
+        function getFormDataChinese() {
+            const data = {
+                基本信息: {
+                    姓名: document.querySelector('[name="patient_name"]')?.value || '',
+                    性别: document.querySelector('[name="patient_gender"]')?.value || '',
+                    年龄: document.querySelector('[name="patient_age"]')?.value || '',
+                    职业: document.querySelector('[name="patient_occupation"]')?.value || '',
+                    联系电话: document.querySelector('[name="patient_phone"]')?.value || '',
+                    记录日期: document.querySelector('[name="record_date"]')?.value || ''
+                },
+                主诉: document.querySelector('[name="chief_complaint"]')?.value || '',
+                现病史: document.querySelector('[name="present_illness"]')?.value || '',
+                系统回顾: {},
+                既往史: {
+                    疾病史: document.querySelector('[name="past_disease"]')?.value || '',
+                    用药史: document.querySelector('[name="past_medication"]')?.value || '',
+                    手术史: document.querySelector('[name="past_surgery"]')?.value || '',
+                    外伤史: document.querySelector('[name="past_trauma"]')?.value || '',
+                    输血史: document.querySelector('[name="past_transfusion"]')?.value || '',
+                    过敏史: document.querySelector('[name="past_allergy"]')?.value || ''
+                },
+                个人史: {
+                    出生地: document.querySelector('[name="birth_place"]')?.value || '',
+                    居住史: document.querySelector('[name="residence_history"]')?.value || '',
+                    婚姻状况: document.querySelector('[name="marital_status"]')?.value || '',
+                    职业史: document.querySelector('[name="occupational_history"]')?.value || '',
+                    吸烟史: document.querySelector('[name="smoking_history"]')?.value || '',
+                    饮酒史: document.querySelector('[name="drinking_history"]')?.value || '',
+                    其他: document.querySelector('[name="other_personal_history"]')?.value || ''
+                },
+                家族史: document.querySelector('[name="family_history"]')?.value || ''
+            };
+
+            // 系统回顾
+            const systemReviews = [
+                'respiratory', 'cardiovascular', 'digestive', 'genitourinary', 
+                'hematopoietic', 'endocrine', 'nervous', 'musculoskeletal'
+            ];
+            const systemNames = {
+                'respiratory': '呼吸系统',
+                'cardiovascular': '循环系统', 
+                'digestive': '消化系统',
+                'genitourinary': '泌尿生殖系统',
+                'hematopoietic': '血液系统',
+                'endocrine': '内分泌系统',
+                'nervous': '神经系统',
+                'musculoskeletal': '运动系统'
+            };
+
+            systemReviews.forEach(system => {
+                const radio = document.querySelector(`[name="${system}_review"]:checked`);
+                const detail = document.querySelector(`[name="${system}_detail"]`);
+                data.系统回顾[systemNames[system]] = {
+                    状态: radio?.value || '',
+                    详情: detail?.value || ''
+                };
+            });
+
+            // 月经史（女性）
+            if (document.querySelector('[name="patient_gender"]')?.value === '女') {
+                data.月经史 = {
+                    月经史: document.querySelector('[name="menstrual_history"]')?.value || '',
+                    末次月经: document.querySelector('[name="last_menstrual_period"]')?.value || ''
+                };
+            }
+
+            // 生育史
+            const hasFertility = document.querySelector('[name="has_fertility"]:checked')?.value;
+            if (hasFertility === '有') {
+                data.生育史 = {
+                    妊娠次数: document.querySelector('[name="pregnancy_count"]')?.value || '',
+                    生产次数: document.querySelector('[name="delivery_count"]')?.value || '',
+                    流产次数: document.querySelector('[name="abortion_count"]')?.value || '',
+                    详细情况: document.querySelector('[name="fertility_details"]')?.value || ''
+                };
+            }
+
+            return data;
+        }
+
+        // 1. JSON导出
+        function exportToJSON() {
+            const data = getFormDataChinese();
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `问诊记录_${data.基本信息.姓名 || '未知'}_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            closeExportModal();
+            showToast('JSON数据已导出！', 'success');
+        }
+
+        // 2. Excel导出（使用HTML表格）
+        function exportToExcel() {
+            const data = getFormDataChinese();
+            let html = `
+                <table border="1" style="border-collapse: collapse; width: 100%;">
+                    <tr><th colspan="2" style="text-align: center; background-color: #f0f0f0; padding: 10px; font-size: 16px;">问诊记录表</th></tr>
+                    <tr><th style="background-color: #f8f8f8; padding: 8px; width: 25%;">字段</th><th style="background-color: #f8f8f8; padding: 8px;">内容</th></tr>
+            `;
+
+            // 基本信息
+            html += '<tr><td colspan="2" style="background-color: #e8f4f8; padding: 8px; font-weight: bold;">基本信息</td></tr>';
+            Object.entries(data.基本信息).forEach(([key, value]) => {
+                html += `<tr><td style="padding: 8px;">${key}</td><td style="padding: 8px;">${value}</td></tr>`;
+            });
+
+            // 主诉
+            html += '<tr><td colspan="2" style="background-color: #e8f4f8; padding: 8px; font-weight: bold;">主诉</td></tr>';
+            html += `<tr><td style="padding: 8px;">主诉</td><td style="padding: 8px;">${data.主诉}</td></tr>`;
+
+            // 现病史
+            html += '<tr><td colspan="2" style="background-color: #e8f4f8; padding: 8px; font-weight: bold;">现病史</td></tr>';
+            html += `<tr><td style="padding: 8px;">现病史</td><td style="padding: 8px;">${data.现病史}</td></tr>`;
+
+            // 系统回顾
+            html += '<tr><td colspan="2" style="background-color: #e8f4f8; padding: 8px; font-weight: bold;">系统回顾</td></tr>';
+            Object.entries(data.系统回顾).forEach(([system, info]) => {
+                html += `<tr><td style="padding: 8px;">${system}</td><td style="padding: 8px;">${info.状态}${info.详情 ? ' - ' + info.详情 : ''}</td></tr>`;
+            });
+
+            // 既往史
+            html += '<tr><td colspan="2" style="background-color: #e8f4f8; padding: 8px; font-weight: bold;">既往史</td></tr>';
+            Object.entries(data.既往史).forEach(([key, value]) => {
+                html += `<tr><td style="padding: 8px;">${key}</td><td style="padding: 8px;">${value}</td></tr>`;
+            });
+
+            // 个人史
+            html += '<tr><td colspan="2" style="background-color: #e8f4f8; padding: 8px; font-weight: bold;">个人史</td></tr>';
+            Object.entries(data.个人史).forEach(([key, value]) => {
+                html += `<tr><td style="padding: 8px;">${key}</td><td style="padding: 8px;">${value}</td></tr>`;
+            });
+
+            // 家族史
+            html += '<tr><td colspan="2" style="background-color: #e8f4f8; padding: 8px; font-weight: bold;">家族史</td></tr>';
+            html += `<tr><td style="padding: 8px;">家族史</td><td style="padding: 8px;">${data.家族史}</td></tr>`;
+
+            // 月经史和生育史
+            if (data.月经史) {
+                html += '<tr><td colspan="2" style="background-color: #e8f4f8; padding: 8px; font-weight: bold;">月经史</td></tr>';
+                Object.entries(data.月经史).forEach(([key, value]) => {
+                    html += `<tr><td style="padding: 8px;">${key}</td><td style="padding: 8px;">${value}</td></tr>`;
+                });
+            }
+            if (data.生育史) {
+                html += '<tr><td colspan="2" style="background-color: #e8f4f8; padding: 8px; font-weight: bold;">生育史</td></tr>';
+                Object.entries(data.生育史).forEach(([key, value]) => {
+                    html += `<tr><td style="padding: 8px;">${key}</td><td style="padding: 8px;">${value}</td></tr>`;
+                });
+            }
+
+            html += '</table>';
+            
+            const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `问诊记录_${data.基本信息.姓名 || '未知'}_${new Date().toISOString().split('T')[0]}.xls`;
+            a.click();
+            URL.revokeObjectURL(url);
+            closeExportModal();
+            showToast('Excel文件已导出！', 'success');
+        }
+
+        // 3. 纯文本导出
+        function exportToText() {
+            const data = getFormDataChinese();
+            let text = '问诊记录\n';
+            text += '=' .repeat(50) + '\n\n';
+
+            // 基本信息
+            text += '【基本信息】\n';
+            Object.entries(data.基本信息).forEach(([key, value]) => {
+                text += `${key}：${value}\n`;
+            });
+            text += '\n';
+
+            // 主诉
+            text += '【主诉】\n';
+            text += `${data.主诉}\n\n`;
+
+            // 现病史
+            text += '【现病史】\n';
+            text += `${data.现病史}\n\n`;
+
+            // 系统回顾
+            text += '【系统回顾】\n';
+            Object.entries(data.系统回顾).forEach(([system, info]) => {
+                text += `${system}：${info.状态}`;
+                if (info.详情) text += ` - ${info.详情}`;
+                text += '\n';
+            });
+            text += '\n';
+
+            // 既往史
+            text += '【既往史】\n';
+            Object.entries(data.既往史).forEach(([key, value]) => {
+                if (value) text += `${key}：${value}\n`;
+            });
+            text += '\n';
+
+            // 个人史
+            text += '【个人史】\n';
+            Object.entries(data.个人史).forEach(([key, value]) => {
+                if (value) text += `${key}：${value}\n`;
+            });
+            text += '\n';
+
+            // 家族史
+            text += '【家族史】\n';
+            text += `${data.家族史}\n\n`;
+
+            // 月经史和生育史
+            if (data.月经史) {
+                text += '【月经史】\n';
+                Object.entries(data.月经史).forEach(([key, value]) => {
+                    if (value) text += `${key}：${value}\n`;
+                });
+                text += '\n';
+            }
+            if (data.生育史) {
+                text += '【生育史】\n';
+                Object.entries(data.生育史).forEach(([key, value]) => {
+                    if (value) text += `${key}：${value}\n`;
+                });
+                text += '\n';
+            }
+
+            text += `记录时间：${new Date().toLocaleString('zh-CN')}\n`;
+
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `问诊记录_${data.基本信息.姓名 || '未知'}_${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            closeExportModal();
+            showToast('文本文件已导出！', 'success');
+        }
+
+        // 4. HTML导出
+        function exportToHTML() {
+            const data = getFormDataChinese();
+            let html = `
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问诊记录 - ${data.基本信息.姓名}</title>
+    <style>
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; line-height: 1.6; margin: 20px; background-color: #f9f9f9; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #34495e; margin-top: 25px; margin-bottom: 15px; border-left: 4px solid #3498db; padding-left: 10px; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .info-item { background: #f8f9fa; padding: 8px 12px; border-radius: 5px; }
+        .label { font-weight: bold; color: #2c3e50; }
+        .content { background: #fff; padding: 15px; border-left: 3px solid #ecf0f1; margin: 10px 0; border-radius: 5px; }
+        .timestamp { text-align: center; color: #7f8c8d; font-size: 14px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #ecf0f1; }
+        @media print { body { background: white; } .container { box-shadow: none; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>问诊记录</h1>
+        
+        <h2>基本信息</h2>
+        <div class="info-grid">
+`;
+            Object.entries(data.基本信息).forEach(([key, value]) => {
+                html += `            <div class="info-item"><span class="label">${key}：</span>${value}</div>\n`;
+            });
+
+            html += `        </div>
+        
+        <h2>主诉</h2>
+        <div class="content">${data.主诉 || '无'}</div>
+        
+        <h2>现病史</h2>
+        <div class="content">${data.现病史 || '无'}</div>
+        
+        <h2>系统回顾</h2>
+        <div class="info-grid">
+`;
+            Object.entries(data.系统回顾).forEach(([system, info]) => {
+                html += `            <div class="info-item"><span class="label">${system}：</span>${info.状态}${info.详情 ? ' - ' + info.详情 : ''}</div>\n`;
+            });
+
+            html += `        </div>
+        
+        <h2>既往史</h2>
+        <div class="info-grid">
+`;
+            Object.entries(data.既往史).forEach(([key, value]) => {
+                if (value) html += `            <div class="info-item"><span class="label">${key}：</span>${value}</div>\n`;
+            });
+
+            html += `        </div>
+        
+        <h2>个人史</h2>
+        <div class="info-grid">
+`;
+            Object.entries(data.个人史).forEach(([key, value]) => {
+                if (value) html += `            <div class="info-item"><span class="label">${key}：</span>${value}</div>\n`;
+            });
+
+            html += `        </div>
+        
+        <h2>家族史</h2>
+        <div class="content">${data.家族史 || '无'}</div>
+`;
+
+            if (data.月经史) {
+                html += `        
+        <h2>月经史</h2>
+        <div class="info-grid">
+`;
+                Object.entries(data.月经史).forEach(([key, value]) => {
+                    if (value) html += `            <div class="info-item"><span class="label">${key}：</span>${value}</div>\n`;
+                });
+                html += `        </div>`;
+            }
+
+            if (data.生育史) {
+                html += `        
+        <h2>生育史</h2>
+        <div class="info-grid">
+`;
+                Object.entries(data.生育史).forEach(([key, value]) => {
+                    if (value) html += `            <div class="info-item"><span class="label">${key}：</span>${value}</div>\n`;
+                });
+                html += `        </div>`;
+            }
+
+            html += `
+        <div class="timestamp">记录时间：${new Date().toLocaleString('zh-CN')}</div>
+    </div>
+</body>
+</html>`;
+
+            const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `问诊记录_${data.基本信息.姓名 || '未知'}_${new Date().toISOString().split('T')[0]}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+            closeExportModal();
+            showToast('HTML文件已导出！', 'success');
+        }
+
+        // 5. 打印友好版本
+        function printFriendly() {
+            const data = getFormDataChinese();
+            const printWindow = window.open('', '_blank');
+            const html = `
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>问诊记录 - ${data.基本信息.姓名}</title>
+    <style>
+        @page { margin: 2cm; size: A4; }
+        * { box-sizing: border-box; }
+        body { font-family: 'SimSun', serif; font-size: 12pt; line-height: 1.5; margin: 0; color: #000; }
+        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+        .header h1 { font-size: 18pt; margin: 0; font-weight: bold; }
+        .section { margin-bottom: 15px; break-inside: avoid; }
+        .section-title { font-size: 14pt; font-weight: bold; background: #f0f0f0; padding: 5px 10px; border-left: 4px solid #000; margin-bottom: 8px; }
+        .info-row { display: flex; flex-wrap: wrap; margin-bottom: 5px; }
+        .info-item { min-width: 200px; margin-right: 20px; margin-bottom: 5px; }
+        .label { font-weight: bold; }
+        .content-box { border: 1px solid #ccc; padding: 10px; min-height: 40px; background: #fff; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .footer { text-align: center; margin-top: 30px; padding-top: 10px; border-top: 1px solid #ccc; font-size: 10pt; }
+        @media print { button { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>问诊记录表</h1>
+    </div>
+    
+    <div class="section">
+        <div class="section-title">基本信息</div>
+        <div class="grid">
+`;
+            Object.entries(data.基本信息).forEach(([key, value]) => {
+                html += `            <div class="info-item"><span class="label">${key}：</span>${value}</div>\n`;
+            });
+
+            html += `        </div>
+    </div>
+    
+    <div class="section">
+        <div class="section-title">主诉</div>
+        <div class="content-box">${data.主诉 || ''}</div>
+    </div>
+    
+    <div class="section">
+        <div class="section-title">现病史</div>
+        <div class="content-box">${data.现病史 || ''}</div>
+    </div>
+    
+    <div class="section">
+        <div class="section-title">系统回顾</div>
+        <div class="grid">
+`;
+            Object.entries(data.系统回顾).forEach(([system, info]) => {
+                html += `            <div class="info-item"><span class="label">${system}：</span>${info.状态}${info.详情 ? ' - ' + info.详情 : ''}</div>\n`;
+            });
+
+            html += `        </div>
+    </div>
+    
+    <div class="section">
+        <div class="section-title">既往史</div>
+        <div class="grid">
+`;
+            Object.entries(data.既往史).forEach(([key, value]) => {
+                if (value) html += `            <div class="info-item"><span class="label">${key}：</span>${value}</div>\n`;
+            });
+
+            html += `        </div>
+    </div>
+    
+    <div class="section">
+        <div class="section-title">个人史</div>
+        <div class="grid">
+`;
+            Object.entries(data.个人史).forEach(([key, value]) => {
+                if (value) html += `            <div class="info-item"><span class="label">${key}：</span>${value}</div>\n`;
+            });
+
+            html += `        </div>
+    </div>
+    
+    <div class="section">
+        <div class="section-title">家族史</div>
+        <div class="content-box">${data.家族史 || ''}</div>
+    </div>
+`;
+
+            if (data.月经史) {
+                html += `    
+    <div class="section">
+        <div class="section-title">月经史</div>
+        <div class="grid">
+`;
+                Object.entries(data.月经史).forEach(([key, value]) => {
+                    if (value) html += `            <div class="info-item"><span class="label">${key}：</span>${value}</div>\n`;
+                });
+                html += `        </div>
+    </div>`;
+            }
+
+            if (data.生育史) {
+                html += `    
+    <div class="section">
+        <div class="section-title">生育史</div>
+        <div class="grid">
+`;
+                Object.entries(data.生育史).forEach(([key, value]) => {
+                    if (value) html += `            <div class="info-item"><span class="label">${key}：</span>${value}</div>\n`;
+                });
+                html += `        </div>
+    </div>`;
+            }
+
+            html += `
+    <div class="footer">
+        记录时间：${new Date().toLocaleString('zh-CN')} | 问诊助手系统
+    </div>
+    
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    <\/script>
+</body>
+</html>`;
+
+            printWindow.document.write(html);
+            printWindow.document.close();
+            closeExportModal();
+            showToast('打印预览已打开！', 'success');
+        }
+
+        // 6. CSV导出
+        function exportToCSV() {
+            const data = getFormDataChinese();
+            let csv = '字段,值\n';
+            
+            // 基本信息
+            csv += '基本信息,\n';
+            Object.entries(data.基本信息).forEach(([key, value]) => {
+                csv += `"${key}","${value}"\n`;
+            });
+            
+            // 主诉和现病史
+            csv += `"主诉","${data.主诉}"\n`;
+            csv += `"现病史","${data.现病史}"\n`;
+            
+            // 系统回顾
+            csv += '系统回顾,\n';
+            Object.entries(data.系统回顾).forEach(([system, info]) => {
+                csv += `"${system}","${info.状态}${info.详情 ? ' - ' + info.详情 : ''}"\n`;
+            });
+            
+            // 既往史
+            csv += '既往史,\n';
+            Object.entries(data.既往史).forEach(([key, value]) => {
+                if (value) csv += `"${key}","${value}"\n`;
+            });
+            
+            // 个人史
+            csv += '个人史,\n';
+            Object.entries(data.个人史).forEach(([key, value]) => {
+                if (value) csv += `"${key}","${value}"\n`;
+            });
+            
+            // 家族史
+            csv += `"家族史","${data.家族史}"\n`;
+            
+            // 月经史和生育史
+            if (data.月经史) {
+                csv += '月经史,\n';
+                Object.entries(data.月经史).forEach(([key, value]) => {
+                    if (value) csv += `"${key}","${value}"\n`;
+                });
+            }
+            if (data.生育史) {
+                csv += '生育史,\n';
+                Object.entries(data.生育史).forEach(([key, value]) => {
+                    if (value) csv += `"${key}","${value}"\n`;
+                });
+            }
+
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `问诊记录_${data.基本信息.姓名 || '未知'}_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            closeExportModal();
+            showToast('CSV文件已导出！', 'success');
+        }
+
+        // 7. XML导出
+        function exportToXML() {
+            const data = getFormDataChinese();
+            let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+            xml += '<医疗记录>\n';
+            xml += '  <记录信息>\n';
+            xml += `    <创建时间>${new Date().toISOString()}</创建时间>\n`;
+            xml += `    <系统>问诊助手</系统>\n`;
+            xml += '  </记录信息>\n';
+            
+            xml += '  <基本信息>\n';
+            Object.entries(data.基本信息).forEach(([key, value]) => {
+                xml += `    <${key}>${value}</${key}>\n`;
+            });
+            xml += '  </基本信息>\n';
+            
+            xml += `  <主诉>${data.主诉}</主诉>\n`;
+            xml += `  <现病史>${data.现病史}</现病史>\n`;
+            
+            xml += '  <系统回顾>\n';
+            Object.entries(data.系统回顾).forEach(([system, info]) => {
+                xml += `    <${system}>\n`;
+                xml += `      <状态>${info.状态}</状态>\n`;
+                xml += `      <详情>${info.详情}</详情>\n`;
+                xml += `    </${system}>\n`;
+            });
+            xml += '  </系统回顾>\n';
+            
+            xml += '  <既往史>\n';
+            Object.entries(data.既往史).forEach(([key, value]) => {
+                xml += `    <${key}>${value}</${key}>\n`;
+            });
+            xml += '  </既往史>\n';
+            
+            xml += '  <个人史>\n';
+            Object.entries(data.个人史).forEach(([key, value]) => {
+                xml += `    <${key}>${value}</${key}>\n`;
+            });
+            xml += '  </个人史>\n';
+            
+            xml += `  <家族史>${data.家族史}</家族史>\n`;
+            
+            if (data.月经史) {
+                xml += '  <月经史>\n';
+                Object.entries(data.月经史).forEach(([key, value]) => {
+                    xml += `    <${key}>${value}</${key}>\n`;
+                });
+                xml += '  </月经史>\n';
+            }
+            
+            if (data.生育史) {
+                xml += '  <生育史>\n';
+                Object.entries(data.生育史).forEach(([key, value]) => {
+                    xml += `    <${key}>${value}</${key}>\n`;
+                });
+                xml += '  </生育史>\n';
+            }
+            
+            xml += '</医疗记录>';
+
+            const blob = new Blob([xml], { type: 'application/xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `问诊记录_${data.基本信息.姓名 || '未知'}_${new Date().toISOString().split('T')[0]}.xml`;
+            a.click();
+            URL.revokeObjectURL(url);
+            closeExportModal();
+            showToast('XML文件已导出！', 'success');
+        }
+
+        // 8. 生成二维码分享
+        function generateQRCode() {
+            const data = getFormDataChinese();
+            
+            // 创建分享内容
+            const shareContent = {
+                title: '问诊记录',
+                patient: data.基本信息.姓名,
+                date: data.基本信息.记录日期,
+                summary: {
+                    chief_complaint: data.主诉.substring(0, 100),
+                    present_illness: data.现病史.substring(0, 100)
+                }
+            };
+
+            // 使用免费的二维码生成API
+            const qrContent = encodeURIComponent(JSON.stringify(shareContent));
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${qrContent}`;
+            
+            // 创建二维码预览弹窗
+            const qrModal = document.createElement('div');
+            qrModal.className = 'modal-overlay';
+            qrModal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">问诊记录二维码</h3>
+                        <button class="modal-close" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</button>
+                    </div>
+                    <div class="modal-body" style="text-align: center;">
+                        <img src="${qrCodeUrl}" alt="二维码" style="max-width: 100%; margin-bottom: 15px;">
+                        <p style="color: #666; font-size: 14px;">扫描二维码查看问诊记录摘要</p>
+                        <button onclick="downloadQRCode('${qrCodeUrl}', '${data.基本信息.姓名}')" 
+                                style="background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                            下载二维码
+                        </button>
+                    </div>
+                </div>
+            `;
+            qrModal.style.display = 'block';
+            document.body.appendChild(qrModal);
+            
+            closeExportModal();
+            showToast('二维码已生成！', 'success');
+        }
+
+        function downloadQRCode(url, patientName) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `问诊记录二维码_${patientName}_${new Date().toISOString().split('T')[0]}.png`;
+            a.click();
+        }
+
+        // 9. 邮件发送
+        function sendByEmail() {
+            const data = getFormDataChinese();
+            
+            const subject = `问诊记录 - ${data.基本信息.姓名}`;
+            const body = `
+问诊记录
+
+基本信息：
+姓名：${data.基本信息.姓名}
+性别：${data.基本信息.性别}
+年龄：${data.基本信息.年龄}
+记录日期：${data.基本信息.记录日期}
+
+主诉：
+${data.主诉}
+
+现病史：
+${data.现病史}
+
+请在电脑端查看完整记录。
+
+发送时间：${new Date().toLocaleString('zh-CN')}
+`;
+
+            // 使用mailto协议
+            const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(mailtoUrl);
+            
+            closeExportModal();
+            showToast('邮件客户端已打开！', 'info');
+        }
+
+        // 10. 云端保存
+        function saveToCloud() {
+            const data = getFormDataChinese();
+            
+            // 模拟云端保存
+            const cloudModal = document.createElement('div');
+            cloudModal.className = 'modal-overlay';
+            cloudModal.innerHTML = `
+                <div class="modal-content" style="max-width: 400px;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">云端保存</h3>
+                        <button class="modal-close" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p style="text-align: center; color: #e67e22; margin-bottom: 20px;">🚧 功能开发中</p>
+                        <p style="color: #666; font-size: 14px; line-height: 1.6;">
+                            云端保存功能正在开发中，将支持：<br>
+                            • 自动同步到云端<br>
+                            • 多设备访问<br>
+                            • 历史记录管理<br>
+                            • 数据加密保护<br>
+                        </p>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button onclick="saveToLocalStorage('${data.基本信息.姓名}')" 
+                                    style="background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-right: 10px;">
+                                保存到本地存储
+                            </button>
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                                    style="background: #95a5a6; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                                取消
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            cloudModal.style.display = 'block';
+            document.body.appendChild(cloudModal);
+            
+            closeExportModal();
+        }
+
+        function saveToLocalStorage(patientName) {
+            const data = getFormDataChinese();
+            const timestamp = new Date().toISOString();
+            const key = `medical_record_${timestamp}`;
+            
+            localStorage.setItem(key, JSON.stringify({
+                ...data,
+                保存时间: timestamp
+            }));
+            
+            document.querySelector('.modal-overlay:last-child').remove();
+            showToast('已保存到本地存储！', 'success');
+        }
+
+        // 通用提示函数
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db'};
+                color: white;
+                border-radius: 5px;
+                z-index: 10000;
+                font-size: 14px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                animation: slideInRight 0.3s ease;
+            `;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
+    
+    <!-- 导出选项弹窗 -->
+    <div id="export-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">选择导出/保存方式</h3>
+                <button class="modal-close" onclick="closeExportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="export-options">
+                    <!-- 基础导出选项 -->
+                    <div class="export-option" onclick="exportToJSON()">
+                        <span class="export-icon">📊</span>
+                        <div class="export-info">
+                            <div class="export-title">JSON 数据</div>
+                            <div class="export-desc">结构化数据，便于程序处理和导入</div>
+                        </div>
+                    </div>
+                    
+                    <div class="export-option" onclick="exportToExcel()">
+                        <span class="export-icon">📈</span>
+                        <div class="export-info">
+                            <div class="export-title">Excel 表格</div>
+                            <div class="export-desc">电子表格格式，便于数据分析</div>
+                        </div>
+                    </div>
+                    
+                    <div class="export-option" onclick="exportToText()">
+                        <span class="export-icon">📄</span>
+                        <div class="export-info">
+                            <div class="export-title">纯文本</div>
+                            <div class="export-desc">简洁文本格式，通用性强</div>
+                        </div>
+                    </div>
+                    
+                    <div class="export-option" onclick="exportToHTML()">
+                        <span class="export-icon">🌐</span>
+                        <div class="export-info">
+                            <div class="export-title">网页文件</div>
+                            <div class="export-desc">HTML格式，可在浏览器查看</div>
+                        </div>
+                    </div>
+                    
+                    <div class="export-option" onclick="printFriendly()">
+                        <span class="export-icon">🖨️</span>
+                        <div class="export-info">
+                            <div class="export-title">打印预览</div>
+                            <div class="export-desc">优化排版，适合纸质打印</div>
+                        </div>
+                    </div>
+                    
+                    <div class="export-option" onclick="exportToCSV()">
+                        <span class="export-icon">📋</span>
+                        <div class="export-info">
+                            <div class="export-title">CSV 文件</div>
+                            <div class="export-desc">逗号分隔值，便于数据库导入</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 高级导出选项 -->
+                    <div class="export-option premium" onclick="generateQRCode()">
+                        <span class="export-icon">📱</span>
+                        <div class="export-info">
+                            <div class="export-title">二维码分享 <span class="premium-badge">NEW</span></div>
+                            <div class="export-desc">生成二维码，手机扫码查看</div>
+                        </div>
+                    </div>
+                    
+                    <div class="export-option premium" onclick="sendByEmail()">
+                        <span class="export-icon">📧</span>
+                        <div class="export-info">
+                            <div class="export-title">邮件发送 <span class="premium-badge">PRO</span></div>
+                            <div class="export-desc">直接发送到指定邮箱</div>
+                        </div>
+                    </div>
+                    
+                    <div class="export-option" onclick="exportToXML()">
+                        <span class="export-icon">📝</span>
+                        <div class="export-info">
+                            <div class="export-title">XML 格式</div>
+                            <div class="export-desc">标准化医疗数据交换格式</div>
+                        </div>
+                    </div>
+                    
+                    <div class="export-option premium" onclick="saveToCloud()">
+                        <span class="export-icon">☁️</span>
+                        <div class="export-info">
+                            <div class="export-title">云端保存 <span class="premium-badge">BETA</span></div>
+                            <div class="export-desc">保存到云端，随时随地访问</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </head>
 <body>
     <h1>问诊助手</h1>    <!-- 基本信息 -->
@@ -3639,14 +4803,17 @@
         <button type="button" onclick="loadTemplate()" style="background-color: #f39c12; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📋 加载模板</button>
         <button type="button" onclick="exportToWord()" style="background-color: #2980b9; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">📝 导出Word</button>
         <button type="button" onclick="restoreForm()" style="background-color: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">🔄 恢复数据</button>
+        <button type="button" onclick="showPrintOptions()" style="background-color: #8e44ad; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; cursor: pointer; margin: 5px;">🖨️ 打印</button>
         
         <div style="margin-top: 20px; padding: 10px; background-color: #f8f9fa; border-radius: 5px; font-size: 12px; color: #666;">
             <p><strong>💡 使用提示：</strong></p>
-            <p>• 点击各模块标题可折叠/展开内容</p>
+            <p>• 点击各模块标题右侧的折叠按钮可展开/收起内容</p>
             <p>• 系统回顾中选择"有"会显示详细输入框</p>
             <p>• 既往史疾病用药支持多种药物选择</p>
             <p>• 生育史根据是否有生育经历智能显示相关内容</p>
-            <p>• 导出Word文档使用中文字段名，便于阅读</p>
+            <p>• <strong>🖨️ "打印"按钮</strong>提供多种导出方式：JSON数据、Excel表格、纯文本、网页文件、打印预览、CSV文件、二维码分享、邮件发送、XML格式、云端保存等</p>
+            <p>• 导出的文档使用中文字段名，便于阅读和医疗记录存档</p>
+            <p>• 二维码分享和邮件发送功能便于快速共享问诊记录摘要</p>
         </div>
     </div>
 </body>
