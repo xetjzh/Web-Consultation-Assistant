@@ -53,21 +53,40 @@
             user-select: none;
             position: relative;
             padding-right: 20px;
+            transition: background-color 0.2s ease;
+            /* 移动端触摸优化 */
+            -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+            touch-action: manipulation;
+            min-height: 44px; /* iOS建议的最小触摸目标 */
+            display: flex;
+            align-items: center;
+        }
+        
+        .section h2:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .section h2:active {
+            background-color: rgba(52, 152, 219, 0.1);
         }
         
         .section h2::after {
             content: '▼';
             position: absolute;
             right: 0;
+            top: 50%;
+            transform: translateY(-50%);
             transition: transform 0.3s ease;
+            font-size: 12px;
+            color: #3498db;
         }
         
         .section.collapsed h2::after {
-            transform: rotate(-90deg);
+            transform: translateY(-50%) rotate(-90deg);
         }
         
         .section.collapsed .section-content {
-            display: none;
+            display: none !important;
         }
         
         .section-content {
@@ -160,6 +179,14 @@
             .section h2 {
                 font-size: 16px;
                 margin-bottom: 12px;
+                padding: 8px 25px 8px 8px;
+                border-radius: 4px;
+                min-height: 48px; /* 增加触摸目标大小 */
+            }
+            
+            .section h2::after {
+                font-size: 14px;
+                right: 8px;
             }
             
             .form-row {
@@ -197,11 +224,13 @@
                 min-width: 120px;
                 padding: 10px 12px;
                 font-size: 16px; /* 防止iOS缩放 */
+                min-height: 44px; /* 确保触摸友好 */
             }
             
             textarea {
                 font-size: 16px; /* 防止iOS缩放 */
                 padding: 10px 12px;
+                min-height: 44px;
             }
             
             /* 隐藏元素在移动端的显示优化 */
@@ -230,6 +259,19 @@
                 background-color: #f8f9fa;
                 border-radius: 4px;
                 border-left: 3px solid #3498db;
+            }
+            
+            /* 确保折叠功能在移动端正常工作 */
+            .section.collapsed .section-content {
+                display: none !important;
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            
+            .section:not(.collapsed) .section-content {
+                display: block !important;
+                opacity: 1;
+                transform: translateY(0);
             }
         }
         
@@ -516,7 +558,28 @@
         // 添加折叠功能
         function toggleSection(element) {
             const section = element.closest('.section');
-            section.classList.toggle('collapsed');
+            const isCollapsed = section.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                // 展开
+                section.classList.remove('collapsed');
+                // 确保内容显示
+                const content = section.querySelector('.section-content');
+                if (content) {
+                    content.style.display = 'block';
+                }
+            } else {
+                // 折叠
+                section.classList.add('collapsed');
+                // 确保内容隐藏
+                const content = section.querySelector('.section-content');
+                if (content) {
+                    content.style.display = 'none';
+                }
+            }
+            
+            // 强制重绘
+            section.offsetHeight;
         }
         
         // 为新增的toggleDisplay元素添加支持
@@ -681,9 +744,25 @@
         function initializeCollapsibleSections() {
             const sectionHeaders = document.querySelectorAll('.section h2');
             sectionHeaders.forEach(header => {
-                header.addEventListener('click', function() {
+                // 为每个标题添加点击事件
+                header.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
                     toggleSection(this);
                 });
+                
+                // 为移动端添加触摸事件支持
+                header.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleSection(this);
+                });
+                
+                // 确保标题可以被触摸
+                header.style.touchAction = 'manipulation';
+                header.style.webkitTouchCallout = 'none';
+                header.style.webkitUserSelect = 'none';
+                header.style.userSelect = 'none';
             });
         }
         
@@ -1323,6 +1402,27 @@
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
             
             if (isMobile) {
+                // 为所有section标题添加触摸反馈
+                const sectionHeaders = document.querySelectorAll('.section h2');
+                sectionHeaders.forEach(header => {
+                    // 添加触摸开始事件
+                    header.addEventListener('touchstart', function(e) {
+                        this.style.backgroundColor = 'rgba(52, 152, 219, 0.1)';
+                    }, { passive: true });
+                    
+                    // 添加触摸结束事件
+                    header.addEventListener('touchend', function(e) {
+                        setTimeout(() => {
+                            this.style.backgroundColor = '';
+                        }, 150);
+                    }, { passive: true });
+                    
+                    // 添加触摸取消事件
+                    header.addEventListener('touchcancel', function(e) {
+                        this.style.backgroundColor = '';
+                    }, { passive: true });
+                });
+                
                 // 为所有select元素添加touch事件优化
                 const selects = document.querySelectorAll('select');
                 selects.forEach(select => {
@@ -1350,6 +1450,25 @@
                         }, 100);
                     });
                 });
+                
+                // 禁用双击缩放（仅在section标题上）
+                document.addEventListener('touchstart', function(e) {
+                    if (e.target.closest('.section h2')) {
+                        if (e.touches.length > 1) {
+                            e.preventDefault();
+                        }
+                    }
+                }, { passive: false });
+                
+                // 防止移动端的300ms延迟
+                let lastTouchEnd = 0;
+                document.addEventListener('touchend', function(e) {
+                    const now = (new Date()).getTime();
+                    if (now - lastTouchEnd <= 300) {
+                        e.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, false);
             }
         }
         
@@ -1520,28 +1639,6 @@
         
         // 页面加载完成后的初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化移动端兼容性
-            enhanceMobileCompatibility();
-            
-            // 添加折叠功能
-            const sectionHeaders = document.querySelectorAll('.section h2');
-            sectionHeaders.forEach(header => {
-                header.addEventListener('click', function() {
-                    const section = this.parentElement;
-                    const content = section.querySelector('.section-content') || 
-                                  section.querySelector('.form-row');
-                    
-                    if (content) {
-                        section.classList.toggle('collapsed');
-                        if (section.classList.contains('collapsed')) {
-                            content.style.display = 'none';
-                        } else {
-                            content.style.display = 'block';
-                        }
-                    }
-                });
-            });
-            
             // 设置当前日期
             const recordDateField = document.querySelector('[name="record_date"]');
             if (recordDateField && !recordDateField.value) {
