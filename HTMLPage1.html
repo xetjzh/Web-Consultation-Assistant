@@ -746,6 +746,7 @@
             
             // 字段中文映射
             const fieldNames = {
+                // 基本信息
                 'patient_name': '患者姓名',
                 'patient_gender': '性别',
                 'patient_age': '年龄',
@@ -762,22 +763,418 @@
                 'emergency_contact_phone': '联系电话',
                 'history_source': '病史来源',
                 'history_reliability': '可靠程度',
+                
+                // 主诉和现病史
                 'chief_complaint': '主诉',
+                '具体日期/时间': '起病时间',
+                '明确诱因/无明显诱因': '诱因',
+                '症状发生部位': '部位',
+                '疼痛性质、咳嗽特点等': '性质',
+                '持续时间/间歇性': '持续时间',
+                '发作频率': '频度',
+                '休息、药物、体位等': '缓解因素',
+                '活动、情绪、饮食等': '加重因素',
+                '症状变化过程、新症状出现、病情进展情况': '演变过程',
+                '与主症状同时出现的其他症状': '伴随症状',
+                '就诊医院名称': '就诊医院',
+                '已做检查项目': '检查项目',
+                '医生诊断': '诊断结果',
+                '增加/减少多少kg': '体重变化',
+                
+                // 生命体征
                 'temperature': '体温',
                 'pulse': '脉搏',
                 'respiration': '呼吸',
                 'blood_pressure': '血压',
                 'height': '身高',
-                'weight': '体重'
+                'weight': '体重',
+                
+                // 既往史相关
+                'drug_interaction': '药物相互作用',
+                'drug_compliance': '用药依从性',
+                '确诊时间': '确诊时间',
+                '最高血压值': '最高血压值',
+                '治疗情况': '治疗情况',
+                '血糖控制情况': '血糖控制情况',
+                '治疗方案': '治疗方案',
+                '具体疾病名称': '具体疾病名称',
+                '发病时间': '发病时间',
+                '病变部位': '病变部位',
+                '后遗症': '后遗症',
+                '具体病名': '具体病名',
+                '治疗经过': '治疗经过',
+                '用药名称(如护肝药、抗病毒药等)': '用药名称',
+                '用药剂量': '用药剂量',
+                '肝功能改善情况': '肝功能改善情况',
+                '肾功能情况': '肾功能情况',
+                '用药名称(如ACEI/ARB、利尿剂等)': '肾病用药名称',
+                '肾功能保护效果': '肾功能保护效果',
+                '肿瘤类型': '肿瘤类型',
+                '化疗/靶向药物名称': '化疗药物名称',
+                '治疗效果': '治疗效果',
+                '其他慢性疾病详情': '其他疾病详情',
+                '肝炎类型': '肝炎类型',
+                '患病时间': '患病时间',
+                '抗病毒药物名称': '抗病毒药物名称',
+                '用药方案': '用药方案',
+                '病毒载量/转氨酶变化': '病毒载量变化',
+                '结核部位': '结核部位',
+                '抗结核药物名称': '抗结核药物名称',
+                '手术名称': '手术名称',
+                '手术时间': '手术时间',
+                '手术医院': '手术医院',
+                '麻醉方式': '麻醉方式',
+                
+                // 个人史
+                'smoking_history': '吸烟史',
+                'smoking_amount': '吸烟量',
+                'drinking_history': '饮酒史',
+                'drinking_amount': '饮酒量',
+                'exercise_habit': '运动习惯',
+                'sleep_quality': '睡眠质量',
+                'diet_preference': '饮食偏好',
+                'living_environment': '居住环境',
+                'exposure_history': '接触史',
+                
+                // 生育史
+                'has_fertility_history': '是否有过生育经历',
+                'pregnancy_times': '怀孕次数',
+                'birth_times': '分娩次数',
+                'abortion_times': '流产次数',
+                'delivery_type': '分娩方式',
+                'delivery_complications': '分娩并发症',
+                'lactation_period': '哺乳期',
+                'contraception_method': '避孕方式',
+                'menstrual_cycle': '月经周期',
+                'menstrual_duration': '月经持续时间',
+                'menstrual_amount': '月经量',
+                'last_menstrual_period': '末次月经',
+                'menarche_age': '初潮年龄',
+                'menopause_age': '绝经年龄',
+                
+                // 体格检查 - 一般状态
+                'development': '发育状况',
+                'nutrition': '营养状况',
+                'consciousness': '意识状态',
+                'mental_state': '精神状态',
+                'body_position': '体位',
+                'gait': '步态',
+                
+                // 体格检查 - 皮肤黏膜
+                'skin_color': '皮肤颜色',
+                'skin_elasticity': '皮肤弹性',
+                'rash': '皮疹',
+                'rash_type': '皮疹类型',
+                'rash_distribution': '皮疹分布',
+                'rash_location': '皮疹部位',
+                '具体部位描述': '皮疹具体部位',
+                'edema': '水肿',
+                'edema_location': '水肿部位',
+                'edema_degree': '水肿程度',
+                'edema_nature': '水肿性质',
+                
+                // 体格检查 - 淋巴结
+                'lymph_nodes': '浅表淋巴结',
+                'lymph_location': '淋巴结部位',
+                'lymph_size': '淋巴结大小',
+                'lymph_texture': '淋巴结质地',
+                'lymph_mobility': '淋巴结活动度',
+                'lymph_tenderness': '淋巴结压痛',
+                
+                // 体格检查 - 头颈部
+                'head': '头颅',
+                'eyes': '眼部',
+                'ent': '耳鼻喉',
+                'neck': '颈部',
+                
+                // 体格检查 - 胸部
+                'chest_shape': '胸廓',
+                'breathing': '呼吸运动',
+                'breath_sounds': '呼吸音',
+                'rales': '啰音',
+                
+                // 体格检查 - 心脏
+                'heart_border': '心界',
+                'heart_rate': '心率',
+                'heart_sounds': '心音',
+                'murmur': '心脏杂音',
+                
+                // 体格检查 - 腹部
+                'abdomen_shape': '腹部外观',
+                'abdominal_veins': '腹壁静脉',
+                'abdomen_palpation': '腹部触诊',
+                'tenderness': '压痛',
+                'tenderness_location': '压痛部位',
+                'liver_size': '肝脏大小',
+                'spleen_size': '脾脏大小',
+                'kidney_size': '肾脏大小',
+                
+                // 系统回顾
+                'respiratory_symptoms': '呼吸系统症状',
+                'cardiovascular_symptoms': '循环系统症状',
+                'digestive_symptoms': '消化系统症状',
+                'urogenital_symptoms': '泌尿生殖系统症状',
+                'nervous_symptoms': '神经系统症状',
+                'endocrine_symptoms': '内分泌系统症状',
+                'hematologic_symptoms': '血液系统症状',
+                'musculoskeletal_symptoms': '肌肉骨骼系统症状',
+                
+                // 辅助检查
+                'blood_test_done': '血液检查',
+                'urine_test_done': '尿液检查',
+                'stool_test_done': '大便检查',
+                'imaging_done': '影像学检查',
+                'ecg_done': '心电图检查',
+                'endoscopy_done': '内镜检查',
+                'pathology_done': '病理检查',
+                'blood_test_result': '血液检查结果',
+                'urine_test_result': '尿液检查结果',
+                'stool_test_result': '大便检查结果',
+                'imaging_result': '影像学检查结果',
+                'ecg_result': '心电图检查结果',
+                'endoscopy_result': '内镜检查结果',
+                'pathology_result': '病理检查结果',
+                
+                // 辅助检查结果详细
+                '血常规结果': '血常规结果',
+                '尿常规结果': '尿常规结果',
+                '肝功能结果': '肝功能结果',
+                '肾功能结果': '肾功能结果',
+                'X线检查结果': 'X线检查结果',
+                'CT检查结果': 'CT检查结果',
+                'MRI检查结果': 'MRI检查结果',
+                '超声检查结果': '超声检查结果',
+                '心电图检查结果': '心电图检查结果',
+                
+                // 系统回顾详细症状描述
+                '体温、发热持续时间、热型等': '发热详情',
+                '乏力程度、持续时间、诱因等': '乏力详情',
+                '盗汗程度、频率、持续时间等': '盗汗详情',
+                '变化幅度和时间': '体重变化详情',
+                '咳嗽性质、频率、诱因等': '咳嗽详情',
+                '痰量、性状、颜色等': '咳痰详情',
+                '咯血量、颜色、频率等': '咯血详情',
+                '胸痛部位、性质、诱因等': '胸痛详情',
+                '呼吸困难程度、诱因、缓解方式等': '呼吸困难详情',
+                '心悸诱因、频率、持续时间等': '心悸详情',
+                '胸闷诱因、程度、缓解方式等': '胸闷详情',
+                '水肿部位、程度、时间等': '水肿详情',
+                '紫绀部位、程度、诱因等': '紫绀详情',
+                '食欲变化程度、持续时间等': '食欲详情',
+                '恶心诱因、频率、伴随症状等': '恶心详情',
+                '呕吐物性状、频率、诱因等': '呕吐详情',
+                '腹痛部位、性质、诱因等': '腹痛详情',
+                '大便次数、性状、诱因等': '腹泻详情',
+                '便秘持续时间、程度、诱因等': '便秘详情',
+                '尿频程度、白天夜间情况等': '尿频详情',
+                '尿急程度、诱因、伴随症状等': '尿急详情',
+                '尿痛部位、程度、诱因等': '尿痛详情',
+                '血尿颜色、程度、诱因等': '血尿详情',
+                '夜尿次数、尿量、持续时间等': '夜尿详情',
+                '头痛部位、性质、诱因等': '头痛详情',
+                '头晕性质、诱因、持续时间等': '头晕详情',
+                
+                // 动态字段映射
+                '药物名称': '药物名称',
+                '剂量规格': '剂量规格', 
+                '用法用量': '用法用量',
+                '用药时间': '用药时间',
+                '用药效果': '用药效果',
+                
+                // 个人史详细
+                '出生省市': '出生省市',
+                '现居住地址': '现居住地址',
+                '在此居住多久': '居住年限',
+                '疫区地点': '疫区地点',
+                '居住时间': '居住时间',
+                '接触情况': '接触情况',
+                '地方病类型': '地方病类型',
+                '传染病类型': '传染病类型',
+                '接触时间': '接触时间',
+                '具体职业': '具体职业',
+                '从事此职业多久': '工作年限',
+                '毒物名称': '毒物名称',
+                '防护措施': '防护措施',
+                '粉尘类型': '粉尘类型',
+                '防护情况': '防护情况',
+                '放射源类型': '放射源类型',
+                '噪音强度': '噪音强度',
+                '听力影响': '听力影响',
+                '每天几支': '每日吸烟量',
+                '吸烟年限': '吸烟年限',
+                '烟草类型(如中华、红塔山等)': '烟草类型',
+                '戒烟时间(如已戒)': '戒烟时间',
+                '酒类种类': '酒类种类',
+                '每日饮酒量': '每日饮酒量',
+                '饮酒年限': '饮酒年限',
+                '戒酒时间(如已戒)': '戒酒时间',
+                '使用剂量': '使用剂量',
+                '使用年限': '使用年限',
+                '毒品类型': '毒品类型',
+                '使用方式': '使用方式',
+                '异常情况描述': '异常情况描述',
+                '疾病名称': '疾病名称',
+                '所学专业': '所学专业',
+                
+                // 外伤史相关
+                '外伤部位': '外伤部位',
+                '外伤时间': '外伤时间',
+                '外伤原因': '外伤原因',
+                '术后恢复情况': '术后恢复情况',
+                
+                // 输血史相关
+                '输血时间': '输血时间',
+                '输血原因': '输血原因',
+                '输血量': '输血量',
+                '不良反应': '不良反应',
+                
+                // 过敏史相关
+                '过敏药物名称': '过敏药物名称',
+                '过敏反应': '过敏反应',
+                '处理经过': '处理经过',
+                '过敏食物': '过敏食物',
+                '过敏症状': '过敏症状',
+                '过敏原': '过敏原',
+                '具体接种情况、缺少的疫苗等': '疫苗接种详情',
+                
+                // 婚姻史
+                '结婚时间': '结婚时间',
+                
+                // 生育史详细
+                '总妊娠次数': '总妊娠次数',
+                '次': '次数',
+                '人': '人数',
+                '流产次数': '流产次数',
+                '流产时间(孕周)': '流产时间',
+                '流产原因': '流产原因',
+                '流产方式': '流产方式',
+                '术后恢复': '术后恢复',
+                '分娩时间': '分娩时间',
+                '孕周': '孕周',
+                '产程时间': '产程时间',
+                '分娩医院': '分娩医院',
+                '出生体重(kg)': '出生体重',
+                '新生儿异常情况描述': '新生儿异常情况',
+                '哺乳时间': '哺乳时间',
+                '无法哺乳原因': '无法哺乳原因',
+                '使用时间': '使用时间',
+                '效果及副作用': '效果及副作用',
+                '不孕时间': '不孕时间',
+                '检查情况': '检查情况',
+                '技术类型': '技术类型',
+                '实施时间': '实施时间',
+                '成功次数': '成功次数',
+                '实施医院': '实施医院',
+                '岁': '年龄',
+                '配偶生育异常情况': '配偶生育异常情况',
+                
+                // 月经史
+                '天': '天数',
+                
+                // 其他可能遗漏的字段
+                '汉族': '民族',
+                '如1×1cm': '淋巴结大小',
+                
+                // 体格检查更多字段
+                'tenderness_nature': '压痛性质',
+                'tenderness_extent': '压痛范围',
+                'liver_texture': '肝脏质地',
+                'liver_edge': '肝脏边缘',
+                'liver_tenderness': '肝脏压痛',
+                'spleen_texture': '脾脏质地',
+                'spleen_tenderness': '脾脏压痛',
+                'kidneys': '肾脏',
+                'muscle_strength': '肌力',
+                'muscle_strength_location': '肌力检查部位',
+                'muscle_strength_grade': '肌力级别',
+                'muscle_tone': '肌张力',
+                'joint_mobility': '关节活动',
+                'joint_location': '关节部位',
+                'joint_condition': '关节情况',
+                'physiological_reflex': '生理反射',
+                'pathological_reflex': '病理反射',
+                'meningeal_signs': '脑膜刺激征',
+                
+                // 其他检查
+                '心电图、内镜、病理等其他检查': '其他检查结果'
             };
             
             inputs.forEach(input => {
                 if (input.value && (input.name || input.placeholder)) {
-                    const key = input.name || input.placeholder;
-                    const chineseName = fieldNames[key] || key;
+                    let key = input.name || input.placeholder;
+                    let chineseName = fieldNames[key];
+                    
+                    // 处理动态生成的药物字段
+                    if (!chineseName) {
+                        if (key.includes('drug') && key.includes('_name')) {
+                            chineseName = '药物名称';
+                        } else if (key.includes('drug') && key.includes('_dose')) {
+                            chineseName = '剂量规格';
+                        } else if (key.includes('drug') && key.includes('_usage')) {
+                            chineseName = '用法用量';
+                        } else if (key.includes('drug') && key.includes('_duration')) {
+                            chineseName = '用药时间';
+                        } else if (key.includes('drug') && key.includes('_effect')) {
+                            chineseName = '用药效果';
+                        } else {
+                            // 如果没有映射，尝试简单的翻译逻辑
+                            chineseName = translateFieldName(key);
+                        }
+                    }
+                    
                     formData[chineseName] = input.value;
                 }
             });
+            
+            // 简单的字段名翻译函数
+            function translateFieldName(fieldName) {
+                // 常见英文字段的翻译
+                const translations = {
+                    'name': '姓名',
+                    'age': '年龄',
+                    'gender': '性别',
+                    'phone': '电话',
+                    'address': '地址',
+                    'occupation': '职业',
+                    'temperature': '体温',
+                    'pulse': '脉搏',
+                    'weight': '体重',
+                    'height': '身高',
+                    'blood_pressure': '血压',
+                    'breathing': '呼吸',
+                    'development': '发育状况',
+                    'nutrition': '营养状况',
+                    'consciousness': '意识状态',
+                    'mental_state': '精神状态',
+                    'body_position': '体位',
+                    'gait': '步态',
+                    'skin_color': '皮肤颜色',
+                    'skin_elasticity': '皮肤弹性',
+                    'rash': '皮疹',
+                    'edema': '水肿',
+                    'has_fertility_history': '是否有过生育经历',
+                    'delivery_type': '分娩方式',
+                    'lymph_nodes': '淋巴结',
+                    'head': '头颅',
+                    'eyes': '眼部',
+                    'ent': '耳鼻喉',
+                    'neck': '颈部',
+                    'chest_shape': '胸廓',
+                    'breath_sounds': '呼吸音',
+                    'rales': '啰音',
+                    'heart_border': '心界',
+                    'heart_rate': '心率',
+                    'heart_sounds': '心音',
+                    'murmur': '心脏杂音',
+                    'abdomen_shape': '腹部外观',
+                    'abdomen_palpation': '腹部触诊',
+                    'tenderness': '压痛',
+                    'liver': '肝脏',
+                    'spleen': '脾脏'
+                };
+                
+                return translations[fieldName] || fieldName;
+            }
             
             // 创建Word文档内容
             let content = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>问诊记录</title>';
