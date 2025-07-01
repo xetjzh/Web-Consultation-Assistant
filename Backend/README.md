@@ -4,7 +4,8 @@
 > **🔗 完整项目文档请查看根目录的 [README.md](../README.md)**
 
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0-brightgreen)](https://nodejs.org/)
-[![MySQL Version](https://img.shields.io/badge/mysql-%3E%3D8.0-blue)](https://mysql.com/)
+[![MySQL - 🐛 Bug报告: [GitHub Issues](https://github.com/xetjzh/Web-Consultation-Assistant/issues)
+- 💡 功能建议: [GitHub Discussions](https://github.com/xetjzh/Web-Consultation-Assistant/discussions)rsion](https://img.shields.io/badge/mysql-%3E%3D8.0-blue)](https://mysql.com/)
 [![Express Version](https://img.shields.io/badge/express-%3E%3D4.18-green)](https://expressjs.com/)
 
 Web问诊助手的后端API服务器，提供完整的RESTful API接口和静态文件服务。
@@ -30,7 +31,7 @@ Web问诊助手的后端API服务器，提供完整的RESTful API接口和静态
 
 ```bash
 # 1. 克隆整个项目
-git clone https://github.com/your-username/Web-Consultation-Assistant.git
+git clone https://github.com/xetjzh/Web-Consultation-Assistant.git
 cd Web-Consultation-Assistant/Backend
 
 # 2. 安装依赖
